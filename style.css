@@ -1,0 +1,43 @@
+body {
+    font-size:32px;
+    color:lightpink;
+}
+
+.container {
+    width:100vw;
+    height:100vh;
+    position:relative;
+    
+    display:flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.story {
+    position:absolute;
+    z-index:3;
+    
+    max-width:40%;
+}
+
+/*width and height stretch the 1280px x 720px canvas to fill the browser*/
+canvas {
+    width:100vw;
+    height:100vh;
+    position:fixed;
+    top: 0;
+    left: 0;
+/*    animation: spin 5s linear 2s infinite alternate;*/
+}
+
+/*??How can I get the mouth to spin but not the frame??*/
+@keyframes spin {
+    0% {
+        transform:rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg); 
+        transform:rotate(360deg);
+    }
+}
