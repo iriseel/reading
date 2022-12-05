@@ -1,24 +1,50 @@
+html {
+    box-sizing: border-box;
+    
+}
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+*::before, *::after{
+    box-sizing: inherit;
+}
+
+polygon {
+    fill: blue;
+    /* opacity:0.2; */
+}
+
+
 body {
-    font-size:32px;
+    max-width: 100vw;
+    max-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    font-size:42px;
+    line-height:30px;
     color:lightpink;
+    position: relative;
+
+    overflow:hidden;
+
 }
 
 .container {
-    width:100vw;
-    height:100vh;
+    width:inherit;
+    height:inherit;
+    /* background: tomato; */
+    /* opacity: 0.25; */
+/*
     position:relative;
-    
     display:flex;
     flex-flow: row wrap;
     justify-content: center;
     align-items: center;
-}
-
-.story {
-    position:absolute;
-    z-index:3;
-    
-    max-width:40%;
+*/
 }
 
 /*width and height stretch the 1280px x 720px canvas to fill the browser*/
@@ -28,16 +54,212 @@ canvas {
     position:fixed;
     top: 0;
     left: 0;
-/*    animation: spin 5s linear 2s infinite alternate;*/
+    z-index: -1;
+
+    transition: filter 1s, width 1s, height 1s, top 1s, left 1s;
 }
 
-/*??How can I get the mouth to spin but not the frame??*/
-@keyframes spin {
+
+.input_video {
+    display:none;
+}
+
+.text {
+    width:100vw;
+    height: 100vh;
+    /* background:blue; */
+    position:relative;
+    
+    display: grid;
+    place-content: center;
+}
+.story {
+    position: absolute;
+    z-index: 4;
+    display: grid;
+    place-content: center;
+
+    /* background:black; */
+}
+/*clipping mask for text, which I am trying to map to landmark coordinates*/
+svg {
+    position:absolute; 
+    z-index:3;
+    top:0;
+    left:0;
+    width: 100vw;
+    height:100vh;
+
+    /* background-color: pink; */
+}
+
+.polygon-clipped {
+    
+}
+
+.exterior {
+    width:100vw;
+    height:100vh;
+    background:blue;
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:4;
+    display:none;
+}
+.polygon-clipped-inverted {
+        /* mask:
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" preserveAspectRatio="none"><polygon points="20,20 20,180 180,100 " fill="black"/></svg>') 0/100% 100%,
+            linear-gradient(#fff, #fff); */
+        mask-composite: exclude;
+
+    -webkit-mask:
+            url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" preserveAspectRatio="none"><polygon points="20,20 20,180 180,100 " fill="black"/></svg>') 0/100% 100%,
+            linear-gradient(#fff, #fff);
+        -webkit-mask-composite: destination-out;
+        
+        background: red;
+}
+
+/* combination of https: //alvarotrigo.com/blog/animated-backgrounds-css/ and https: //stackoverflow.com/questions/5087420/how-to-rotate-the-background-image-in-the-container */
+.bg_gradient:before {
+    content: "";
+    position: absolute;
+    /* opacity:0; */
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    z-index: -1;
+    background-size: 300% 300%;
+    background-image: radial-gradient(circle, rgba(251, 160, 63, 1) 0%, rgba(235, 198, 49, 1) 10%, rgba(184, 82, 238, 1) 22%, rgba(218, 149, 80, 1) 34%, rgba(155, 85, 224, 1) 45%, rgba(81, 148, 194, 1) 59%, rgba(152, 169, 125, 1) 71%, rgba(40, 57, 166, 1) 85%, rgba(252, 70, 107, 1) 100%);
+    filter:blur(200px);
+    animation: AnimateBG 10s ease infinite, rotate 10s ease infinite;
+    
+}
+
+.inner_img {
+background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+@keyframes AnimateBG {
     0% {
-        transform:rotate(0deg);
+        background-position: 0% 0%
+    }
+    10% {
+        background-position: 75% 30%
+    }
+    25% {
+        background-position: 100% 100%
+    }
+    40% {
+        background-position: 30% 80%
+    }
+    50% {
+        background-position: 25% 50%
+    }
+    65% {
+        background-position: 60% 20%
+    }
+    75% {
+        background-position: 100% 75%
+    }
+    85% {
+        background-position: 20% 60%
     }
     100% {
-        -webkit-transform: rotate(360deg); 
-        transform:rotate(360deg);
+        background-position: 0% 0%
     }
 }
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(180deg);
+    }
+
+    50% {
+        transform: rotate(0deg);
+    }
+
+    75% {
+        transform: rotate(-180deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+/* 
+@keyframes bg_gradient {
+    0% {
+        background: linear-gradient(0deg, rgba(9, 9, 121, 1) 0%, rgba(72, 104, 255, 1) 6%, rgba(0, 110, 94, 1) 12%, rgba(84, 176, 221, 1) 18%, rgba(95, 137, 255, 1) 24%, rgba(28, 249, 255, 1) 30%, rgba(19, 66, 182, 1) 36%, rgba(0, 168, 108, 1) 40%, rgba(0, 212, 255, 1) 46%, rgba(0, 255, 209, 1) 50%, rgba(2, 3, 186, 1) 55%, rgba(157, 240, 255, 1) 59%, rgba(136, 160, 236, 1) 65%, rgba(55, 45, 255, 1) 71%, rgba(39, 231, 223, 1) 78%, rgba(25, 135, 0, 1) 86%, rgba(24, 55, 255, 1) 91%, rgba(9, 9, 121, 1) 100%);
+    }
+
+    25% {
+        background: red;
+    }
+
+    100% {
+        background: yellow;
+    }
+} */
+
+/* #svgPath {
+    width: 100%;
+    height:100%;
+
+    background-color: pink;
+
+    -webkit-transform: scale(0.01, 0.01);
+        transform: scale(0.01, 0.01);
+
+} */
+/* .svg-clipped {
+    -webkit-clip-path: url(#svgPath);
+    clip-path: url(#svgPath);
+} */
+
+/* #rect {
+    width: 400vw;
+    height:400vh;
+    x:-200vw;
+    y: -200vh;
+    transform-origin: center;
+    animation: rotate 5s linear infinite alternate-reverse;
+} */
+
+/* #gradient stop:first-child {
+    animation: gradient 5s linear infinite alternate;
+    stop-opacity:1;
+}
+
+#gradient stop:last-child {
+animation: gradient_2 1s linear infinite alternate;
+    stop-opacity: 1;
+} */
+
+/* @keyframes gradient {
+    0% {stop-color: blue;}
+    25% {stop-color:red;}
+    100% {stop-color:yellow;}
+}
+
+@keyframes gradient_2 {
+    0% {
+        stop-color: pink;
+    }
+
+    25% {
+        stop-color: orange;
+    }
+
+    100% {
+        stop-color: purple;
+    }
+} */
