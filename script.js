@@ -6,6 +6,8 @@ const mouthCanvasElement = document.getElementsByClassName("mouth_canvas")[0];
 const mouthCanvasCtx = mouthCanvasElement.getContext("2d");
 const text_element = document.querySelector(".text");
 const story = document.querySelector(".story");
+const story_double = document.querySelector(".story_double");
+const lavender = document.querySelector(".lavender");
 const exterior_element = document.querySelector(".exterior");
 
 const audios = [
@@ -30,14 +32,28 @@ const audios = [
     document.querySelector(".how_3"),
     document.querySelector(".zhou_3"),
     document.querySelector(".zhou_4"),
-    document.querySelector(".doves"),
-    document.querySelector(".lavender"),
-    document.querySelector(".flowers"),
+    document.querySelector(".zhou_5"),
+    document.querySelector(".zhou_6"),
+    document.querySelector(".zhou_7"),
+    document.querySelector(".zhou_8"),
+    document.querySelector(".zhou_9"),
+    document.querySelector(".doves_1"),
+    document.querySelector(".doves_2"),
+    document.querySelector(".doves_3"),
+    document.querySelector(".lavender_1"),
+    document.querySelector(".lavender_2"),
+    document.querySelector(".lavender_3"),
+    document.querySelector(".flowers_1"),
+    document.querySelector(".flowers_2"),
 ];
 
 document.querySelectorAll("audio").loop = false;
 let index = 0;
 let audio = audios[index];
+const double_quotes_text =
+    "&ldquo; &nbsp; &nbsp; &nbsp; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
+const double_single_quotes_text =
+    "&ldquo; &lsquo; &nbsp; &nbsp; &nbsp; &rsquo; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
 
 const texts = [
     "To speak is to repeat.",
@@ -50,13 +66,29 @@ const texts = [
     "TEST",
     "To speak is to relinquish.",
     "To speak is to respire/refrain.",
+    "TEST",
     "To speak is to resign.",
+    "TEST",
+    "TEST",
+    "TEST",
     "To speak beyond speech. <br> How to say",
     "some",
     "thing.",
     "To speak is to regulate.",
+    "To speak is to regulate.",
+    "To speak is to regulate.",
+    "To speak is to regulate.",
+    "To speak is to regulate.",
+    "To speak is to regulate.",
+    "To speak is to regulate.",
     "To speak is to receive.",
+    double_quotes_text.repeat(100),
+    double_single_quotes_text.repeat(100),
     "To speak is to be relieved from oneself.",
+    "To speak is to be relieved from oneself.",
+    "To speak is to be relieved from oneself.",
+    "TEST",
+    "TEST",
     "To speak is to resolve.",
 ];
 
@@ -155,24 +187,6 @@ function onResults(results) {
             let crop_width = crop_width_percent * mouthCanvasElement.width;
             let crop_height = crop_height_percent * mouthCanvasElement.height;
 
-            //mouth outer left
-            let landmark_61_percent = results.multiFaceLandmarks[0][61].x;
-            //mouth outer right
-            let landmark_91_percent = results.multiFaceLandmarks[0][91].x;
-            let landmark_61_top_percent = results.multiFaceLandmarks[0][61].y;
-
-            let mouth_outer_width_percent =
-                landmark_91_percent - landmark_61_percent;
-
-            //mouth outer top
-            let landmark_0_percent = results.multiFaceLandmarks[0][0].y;
-            //mouth outer bottom
-            let landmark_17_percent = results.multiFaceLandmarks[0][17].y;
-            //mouth inner top
-            let landmark_13_percent = results.multiFaceLandmarks[0][13].y;
-            //mouth inner bottom
-            let landmark_14_percent = results.multiFaceLandmarks[0][14].y;
-
             let landmark_17_x =
                 results.multiFaceLandmarks[0][17].x * mouthCanvasElement.width;
             let landmark_17_y =
@@ -191,8 +205,6 @@ function onResults(results) {
             let landmark_14_x =
                 results.multiFaceLandmarks[0][14].x * mouthCanvasElement.width;
 
-            let mouth_inner_height = landmark_14_y - landmark_13_y;
-
             mouth_inner_distances = calcDistance(
                 landmark_14_x,
                 landmark_14_y,
@@ -209,53 +221,7 @@ function onResults(results) {
 
             checkCurrentAbsRange();
 
-            //subtract bottom y from top y because the bottom y will be a larger positive value (y calculated as positive distance from top of window!)
-            let mouth_outer_height_percent =
-                landmark_17_percent - landmark_0_percent;
-            let mouth_inner_height_percent =
-                landmark_14_percent - landmark_13_percent;
-
-            //head top
-            let landmark_10_percent = results.multiFaceLandmarks[0][10].y;
-            //head bottom
-            let landmark_152_percent = results.multiFaceLandmarks[0][152].y;
-            let head_height_percent =
-                landmark_152_percent - landmark_10_percent;
-
-            let head_mouth_ratio =
-                head_height_percent / mouth_outer_height_percent;
-
-            //need to use mouth_outer_height_percent, not mouth_inner_height_percent, because mouth_inner_height_percent returns a negative value sometimes
-            let mouth_height_width_ratio =
-                mouth_outer_height_percent / mouth_outer_width_percent;
-
-            // let image = document.createElement("img");
-
-            // if (mouth_height_width_ratio > 30) {
-            //     text = "O";
-            //     text =
-            //         "My  monolingualism  dwells,  and  I  call  it  my  dwelling;  it feels like one to me, and I remain in it and inhabit it.";
-            // } else if (mouth_height_width_ratio > 15) {
-            //     text = "A";
-            //     text = "It inhabits me.";
-            // } else if (mouth_height_width_ratio > 10 && head_mouth_ratio < 6) {
-            //     text = "E";
-            //     text =
-            //         "The   monolingualism  in  which  I  draw  my  very  breath  is,  for  me,  my  element. ";
-            // } else if (head_mouth_ratio > 11) {
-            //     text = "M";
-            //     text =
-            //         "Not  a  natural  element,  not  the  transparency  of  the  ether,  but  an  absolute  habitat.";
-
-            //     //!!Test ONLY!!
-            //     // image.src = "assets/mouth.png";
-            // } else {
-            //     text = "say something";
-            //     text = "I am monolingual.";
-            // }
-
-            document.querySelector(".text p").innerText = text;
-            //                document.querySelector('.letter').appendChild(image);
+            document.querySelector(".text p").innerHTML = text;
 
             mouthCanvasCtx.save();
 
@@ -292,10 +258,21 @@ function onResults(results) {
                 b_noise = false,
                 b_name = false,
                 b_named = false,
-                b_inner_image = false;
+                b_translation = false,
+                b_equivalent = false,
+                b_equivocation = false,
+                b_negotiation = false,
+                b_divination = false,
+                b_double_quotes = false,
+                b_double_single_quotes = false,
+                b_double_textbox_separate = false,
+                b_double_textbox_overlap = false,
+                b_inner_image = false,
+                b_stretch_image = false,
+                b_end = false;
 
-            //.zhou_1
-            if (index == 11) {
+            //!! STORY BEATS!!
+            if (index == 1) {
                 b_blur = true;
                 blur();
             } else if (index == 2) {
@@ -323,60 +300,60 @@ function onResults(results) {
             } else if (index == 10) {
                 b_between = true;
                 between();
-            } else if (index == 1) {
+            } else if (index == 11) {
                 b_noise = true;
                 noise(mouth_outer_distances);
             } else if (index == 12) {
                 b_name = true;
-                // name();
+                to_name();
             } else if (index == 13) {
                 b_named = true;
-                // named();
+                named();
             } else if (index == 14) {
+                b_translation = true;
+            } else if (index == 15) {
+                b_equivalent = true;
+            } else if (index == 16) {
+                b_equivocation = true;
+            } else if (index == 17) {
+                b_negotiation = true;
+            } else if (index == 18) {
+                b_divination = true;
+            } else if (index == 19 || index == 20) {
+                b_divination = true;
+                document.querySelector("body").style.color = "white";
+            } else if (index == 20) {
+                b_double_textbox_separate = true;
+                document.querySelector(".story_double p").innerHTML = text;
+                double_textbox();
+            } else if (index == 21) {
+                b_double_textbox_overlap = true;
+            } else if (index == 22) {
                 b_inner_image = true;
                 inner_image();
-            } else if (index == 15) {
+            } else if (index == 23) {
+                b_stretch_image = true;
+                stretch_image();
+            } else if (index == 24) {
+                b_end = true;
             }
 
             // draw landmarks on face
             for (const landmarks of results.multiFaceLandmarks) {
                 landmarks.forEach((landmark, i) => {
-                    // if (
-                    //     i === 13 ||
-                    //     i === 312 ||
-                    //     i === 311 ||
-                    //     i === 310 ||
-                    //     i === 415 ||
-                    //     i === 308 ||
-                    //     i === 324 ||
-                    //     i === 318 ||
-                    //     i === 402 ||
-                    //     i === 317 ||
-                    //     i === 14 ||
-                    //     i === 87 ||
-                    //     i === 178 ||
-                    //     i === 88 ||
-                    //     i === 95 ||
-                    //     i === 78 ||
-                    //     i === 191 ||
-                    //     i === 80 ||
-                    //     i === 81 ||
-                    //     i === 82
-                    // ) {
-                    // Landmarks
-                    // ===============================
-
-                    landmark_x_percent = landmark.x;
-                    landmark_y_percent = landmark.y;
-                    landmark_x = landmark_x_percent * mouthCanvasElement.width;
-                    landmark_y = landmark_y_percent * mouthCanvasElement.height;
+                    let landmark_x_percent = landmark.x;
+                    let landmark_y_percent = landmark.y;
+                    let landmark_x =
+                        landmark_x_percent * mouthCanvasElement.width;
+                    let landmark_y =
+                        landmark_y_percent * mouthCanvasElement.height;
 
                     //this code scales up the landmark positions from their original x,y to the new zoomed-in scale, taken from:
                     //https://stackoverflow.com/questions/20630207/transforming-coordinates-of-one-rectangle-to-another-rectangle
-                    landmark_x_cropped =
+                    let landmark_x_cropped =
                         ((landmark_x - crop_x) / crop_width) *
                         mouthCanvasElement.width;
-                    landmark_y_cropped =
+                    let landmark_y_cropped =
                         ((landmark_y - crop_y) / crop_height) *
                         mouthCanvasElement.height;
 
@@ -384,7 +361,7 @@ function onResults(results) {
                     landmarks_x_cropped.push(landmark_x_cropped);
                     landmarks_y_cropped.push(landmark_y_cropped);
 
-                    if (b_dots_inverted) {
+                    if (b_dots_inverted || b_name || b_named) {
                     } else {
                         mouthCanvasCtx.fillStyle = "red";
                     }
@@ -407,43 +384,59 @@ function onResults(results) {
                         lines();
                     }
                     //?? How to cycle through multiple punctuations while still on index ==4??
+                    //?? why does this seem to be running way past when b_dots_quote is true??
                     else if (b_dots_quote) {
                         mouthCanvasCtx.font = "50px serif";
                         mouthCanvasCtx.fillText(
-                            ",",
+                            "...",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
+                        console.log("dots_quote");
                     } else if (b_name) {
-                        mouthCanvasCtx.font = "40px serif";
+                        mouthCanvasCtx.font = "20px serif";
                         mouthCanvasCtx.fillText(
                             "to name",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
+                        console.log("to name");
                     } else if (b_named) {
+                        mouthCanvasCtx.font = "20px serif";
+                        mouthCanvasCtx.fillStyle = "green";
+                        mouthCanvasCtx.fillText(
+                            "to name",
+                            landmark_x_cropped,
+                            landmark_y_cropped
+                        );
                         mouthCanvasCtx.font = "40px serif";
+                        mouthCanvasCtx.fillStyle = "red";
                         mouthCanvasCtx.fillText(
                             "to be named",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
+                        console.log("to be named");
+                    } else if (b_translation) {
+                        translation();
+                    } else if (b_equivalent) {
+                        equivalent();
+                    } else if (b_equivocation) {
+                        equivocation();
+                    } else if (b_negotiation) {
+                        negotiation();
+                    } else if (b_divination) {
+                        divination();
+                    } else if (b_end) {
+                        end();
                     } else {
                     }
 
                     mouthCanvasCtx.fill();
 
-                    //adds the coordinate of the point next to the dot onscreen
-                    // mouthCanvasCtx.fillText(i, landmark_x_cropped, landmark_y_cropped);
-                    // mouthCanvasCtx.fillText(
-                    //     landmark_x_cropped,
-                    //     landmark_x_cropped,
-                    //     landmark_y_cropped
-                    // );
-
                     // SVG Path
                     // ===============================
-                    //?? Why is it multiplied by 100 here?
+                    //Values multiplied by 100 here corresponding to the width="100" height="100" in the svg below (see the url in polygon_clipped_inverted.style)
                     svg_points[i] = {
                         x:
                             (landmark_x_cropped / mouthCanvasElement.width) *
@@ -453,7 +446,7 @@ function onResults(results) {
                             100,
                     };
 
-                    //?? Why is it multiplied by document.body stuff here?
+                    //Values multiplied by document.body values here to map/stretch them to the full browser window
                     dv_points[i] = {
                         x:
                             (landmark_x_cropped / mouthCanvasElement.width) *
@@ -534,38 +527,41 @@ function onResults(results) {
                     ] = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="none"><polygon points="${svg_path}" fill="black"/></svg>') 0/100% 100%, linear-gradient(#fff, #fff)`;
                 }
 
-                // document
-                //     .getElementById("polygon")
-                //     .setAttribute("points", svg_path);
-
                 textWidth = dv_points[308].x - dv_points[78].x;
                 textHeight = dv_points[14].y - dv_points[13].y;
 
-                //?? trying to stabilize the text
-                // const storyBoundingBox = story.getBoundingClientRect();
+                story.style.transform = `translate(${round(
+                    dv_points[13].x - textWidth / 2
+                )}px ,${round(dv_points[14].y - textHeight)}px)`;
 
-                // const sx = lerp(
-                //     storyBoundingBox.left,
-                //     dv_points[13].x - textWidth / 2,
-                //     1
-                // );
-                // const sy = lerp(
-                //     storyBoundingBox.top,
-                //     dv_points[14].y - textHeight,
-                //     1
-                // );
+                story.style.height = `${Math.floor(textHeight)}px`;
 
-                if (b_textbox) {
-                } else {
-                    // story.style.transform = `translate(${sx}px ,${sy}px)`;
+                story.style.width = `${Math.floor(textWidth)}px`;
 
-                    story.style.transform = `translate(${round(
+                if (b_double_textbox_separate) {
+                    story_double.style.transform = `translate(${round(
+                        dv_points[13].x - textWidth / 1.5
+                    )}px ,${round(dv_points[14].y - textHeight / 1.5)}px)`;
+
+                    story_double.style.height = `${Math.floor(textHeight)}px`;
+
+                    story_double.style.width = `${Math.floor(textWidth)}px`;
+                } else if (b_double_textbox_overlap) {
+                    story_double.style.transform = `translate(${round(
                         dv_points[13].x - textWidth / 2
                     )}px ,${round(dv_points[14].y - textHeight)}px)`;
 
-                    story.style.height = `${Math.floor(textHeight)}px`;
+                    story_double.style.height = `${Math.floor(textHeight)}px`;
 
-                    story.style.width = `${Math.floor(textWidth)}px`;
+                    story_double.style.width = `${Math.floor(textWidth)}px`;
+                } else if (b_stretch_image) {
+                    lavender.style.transform = `translate(${round(
+                        dv_points[13].x - textWidth / 2
+                    )}px ,${round(dv_points[14].y - textHeight)}px)`;
+
+                    lavender.style.height = `${Math.floor(textHeight)}px`;
+
+                    lavender.style.width = `${Math.floor(textWidth)}px`;
                 }
             }
 
@@ -615,9 +611,6 @@ function map(in_val, in_min, in_max, out_min, out_max) {
 }
 
 const round = (val) => Math.ceil(val / 20) * 20;
-function lerp(start, end, amt) {
-    return (1 - amt) * start + amt + end;
-}
 
 function clear_canvas() {
     mouthCanvasCtx.clearRect(
@@ -629,11 +622,25 @@ function clear_canvas() {
 }
 
 //add transition to story so that it doesn't jitter (stabilize position)
-(function add_transition() {
+function add_transition() {
+    story.style.transition = "transform 0s ease-in-out";
+
     setTimeout(() => {
         story.style.transition = "transform 1s ease-in-out";
     }, 500);
-})();
+}
+
+add_transition();
+
+function remove_clippath() {
+    text_element.classList.remove("polygon-clipped");
+    text_element.style.clipPath = "";
+}
+
+//make the text_element a clippath again, make text move with story instead again
+function restore_clippath() {
+    text_element.classList.add("polygon-clipped");
+}
 
 // ===============================
 // Specific / storyline functions
@@ -646,6 +653,8 @@ function blur() {
     //reposition canvas so things remain centered
     mouthCanvasElement.style.left = "-2.5vw";
     mouthCanvasElement.style.top = "-2.5vh";
+
+    console.log("blur");
 }
 
 function focus() {
@@ -656,6 +665,8 @@ function focus() {
     mouthCanvasElement.style.top = "0vh";
     mouthCanvasElement.style.transition =
         "filter .2s, width 1s, height 1s, top 1s, left 1s";
+
+    console.log("focus");
 }
 
 function dots() {
@@ -676,7 +687,7 @@ function dots() {
         );
     });
 
-    // console.log("dots");
+    console.log("dots");
 }
 
 function lines() {
@@ -739,41 +750,26 @@ function dots_inverted() {
 }
 
 function textbox() {
-    text_element.style.background = "red";
-    text_element.classList.remove("polygon-clipped");
-    text_element.style.clipPath = "";
+    add_transition();
 
-    //remove positioning from story since textbox (text_element) is now not a fixed clippath but a moving object; text moves with textbox now instead of story
-    story.style.transform = "";
-    story.style.height = "";
-    story.style.width = "";
-    story.style.position = "relative";
+    remove_clippath();
 
-    //add positioning to textbox
-    text_element.style.transform = `translate(${round(
-        dv_points[13].x - textWidth / 2
-    )}px ,${round(dv_points[14].y - textHeight)}px)`;
+    story.style.background = "red";
 
-    text_element.style.height = `${round(textHeight)}px`;
-    text_element.style.width = `${round(textWidth)}px`;
-    text_element.style.minHeight = "2em";
+    story.style.height = `${round(textHeight)}px`;
+    story.style.width = `${round(textWidth)}px`;
 
     console.log("textbox");
 }
 
 function exterior() {
+    add_transition();
     exterior_element.style.display = "block";
     exterior_element.classList.add("bg_gradient");
 
-    //make the text_element a clippath again, make text move with story instead again
-    text_element.classList.add("polygon-clipped");
+    story.style.background = "transparent";
 
-    story.style.position = "absolute";
-
-    text_element.style.transform = "";
-    text_element.style.width = "100vw";
-    text_element.style.height = "100vh";
-    text_element.style.minHeight = "";
+    restore_clippath();
 
     console.log("exterior");
 }
@@ -792,21 +788,558 @@ function between() {
 }
 
 function noise(mouth_outer_distances) {
-    let mouth_outer_distances_volume = map(mouth_outer_distances, 0, 120, 0, 1);
+    exterior_element.style.display = "none";
+    text_element.classList.remove("bg_gradient");
+
+    //??this seems to change based on how far user is from webcam??
+    console.log("mouth outer distances is" + mouth_outer_distances);
+    console.log("volume is:" + audio.volume);
+
+    let mouth_outer_distances_volume = map(mouth_outer_distances, 0, 160, 0, 1);
     // Math.abs always returns a positive value
     audio.volume = Math.abs(mouth_outer_distances_volume);
 
-    console.log("mouth outer distances is" + mouth_outer_distances);
-    console.log("volume is:" + audio.volume);
     //?? is this working? for this segment, trying to get the audio to play even if mouth isn't moving
     pause = 0;
-    // console.log("noise");
+    console.log("noise");
+}
+
+function to_name() {
+    clear_canvas();
+    mouthCanvasElement.style.background = "black";
+    mouthCanvasCtx.fillStyle = "green";
+
+    console.log("name");
+}
+
+function named() {
+    clear_canvas();
+    mouthCanvasElement.style.background = "black";
+
+    console.log("named");
+}
+
+function translation() {
+    mouthCanvasCtx.font = "30px serif";
+    mouthCanvasCtx.fillStyle = "yellow";
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[13],
+        landmarks_y_cropped[13]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[312],
+        landmarks_y_cropped[312]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[311],
+        landmarks_y_cropped[311]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[310],
+        landmarks_y_cropped[310]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[415],
+        landmarks_y_cropped[415]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[308],
+        landmarks_y_cropped[308]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[324],
+        landmarks_y_cropped[324]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[318],
+        landmarks_y_cropped[318]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[402],
+        landmarks_y_cropped[402]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[317],
+        landmarks_y_cropped[317]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[14],
+        landmarks_y_cropped[14]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[87],
+        landmarks_y_cropped[87]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[178],
+        landmarks_y_cropped[178]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[88],
+        landmarks_y_cropped[88]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[95],
+        landmarks_y_cropped[95]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[78],
+        landmarks_y_cropped[78]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[191],
+        landmarks_y_cropped[191]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[80],
+        landmarks_y_cropped[80]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[81],
+        landmarks_y_cropped[81]
+    );
+    mouthCanvasCtx.fillText(
+        "translation",
+        landmarks_x_cropped[82],
+        landmarks_y_cropped[82]
+    );
+}
+
+function equivalent() {
+    translation();
+
+    mouthCanvasCtx.fillStyle = "orange";
+
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[12],
+        landmarks_y_cropped[12]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[268],
+        landmarks_y_cropped[268]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[271],
+        landmarks_y_cropped[271]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[272],
+        landmarks_y_cropped[272]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[407],
+        landmarks_y_cropped[407]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[292],
+        landmarks_y_cropped[292]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[325],
+        landmarks_y_cropped[325]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[319],
+        landmarks_y_cropped[319]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[403],
+        landmarks_y_cropped[403]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[316],
+        landmarks_y_cropped[316]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[15],
+        landmarks_y_cropped[15]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[86],
+        landmarks_y_cropped[86]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[179],
+        landmarks_y_cropped[179]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[89],
+        landmarks_y_cropped[89]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[96],
+        landmarks_y_cropped[96]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[62],
+        landmarks_y_cropped[62]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[183],
+        landmarks_y_cropped[183]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[42],
+        landmarks_y_cropped[42]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[41],
+        landmarks_y_cropped[41]
+    );
+    mouthCanvasCtx.fillText(
+        "equivalent",
+        landmarks_x_cropped[38],
+        landmarks_y_cropped[38]
+    );
+}
+
+function equivocation() {
+    equivalent();
+
+    mouthCanvasCtx.fillStyle = "purple";
+
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[11],
+        landmarks_y_cropped[11]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[302],
+        landmarks_y_cropped[302]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[303],
+        landmarks_y_cropped[303]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[304],
+        landmarks_y_cropped[304]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[408],
+        landmarks_y_cropped[408]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[306],
+        landmarks_y_cropped[306]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[307],
+        landmarks_y_cropped[307]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[320],
+        landmarks_y_cropped[320]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[404],
+        landmarks_y_cropped[404]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[315],
+        landmarks_y_cropped[315]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[16],
+        landmarks_y_cropped[16]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[85],
+        landmarks_y_cropped[85]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[180],
+        landmarks_y_cropped[180]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[90],
+        landmarks_y_cropped[90]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[77],
+        landmarks_y_cropped[77]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[76],
+        landmarks_y_cropped[76]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[184],
+        landmarks_y_cropped[184]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[74],
+        landmarks_y_cropped[74]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[73],
+        landmarks_y_cropped[73]
+    );
+    mouthCanvasCtx.fillText(
+        "equivocation",
+        landmarks_x_cropped[72],
+        landmarks_y_cropped[72]
+    );
+}
+
+function negotiation() {
+    equivocation();
+
+    mouthCanvasCtx.fillStyle = "pink";
+
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[0],
+        landmarks_y_cropped[0]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[267],
+        landmarks_y_cropped[267]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[269],
+        landmarks_y_cropped[269]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[270],
+        landmarks_y_cropped[270]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[409],
+        landmarks_y_cropped[409]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[291],
+        landmarks_y_cropped[291]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[375],
+        landmarks_y_cropped[375]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[321],
+        landmarks_y_cropped[321]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[405],
+        landmarks_y_cropped[405]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[314],
+        landmarks_y_cropped[314]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[17],
+        landmarks_y_cropped[17]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[84],
+        landmarks_y_cropped[84]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[181],
+        landmarks_y_cropped[181]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[91],
+        landmarks_y_cropped[91]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[146],
+        landmarks_y_cropped[146]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[61],
+        landmarks_y_cropped[61]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[185],
+        landmarks_y_cropped[185]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[40],
+        landmarks_y_cropped[40]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[39],
+        landmarks_y_cropped[39]
+    );
+    mouthCanvasCtx.fillText(
+        "negotiation",
+        landmarks_x_cropped[37],
+        landmarks_y_cropped[37]
+    );
+}
+
+function divination() {
+    mouthCanvasCtx.font = "20px serif";
+    mouthCanvasCtx.fillStyle = "white";
+
+    landmarks_x_cropped.forEach((landmark_x_cropped, i) => {
+        if (
+            i == 13 ||
+            i == 312 ||
+            i == 311 ||
+            i == 310 ||
+            i == 415 ||
+            i == 308 ||
+            i == 324 ||
+            i == 318 ||
+            i == 402 ||
+            i == 317 ||
+            i == 14 ||
+            i == 87 ||
+            i == 178 ||
+            i == 88 ||
+            i == 95 ||
+            i == 78 ||
+            i == 191 ||
+            i == 80 ||
+            i == 81 ||
+            i == 82 ||
+            i == 12 ||
+            i == 268 ||
+            i == 271 ||
+            i == 272 ||
+            i == 407 ||
+            i == 292 ||
+            i == 325 ||
+            i == 319 ||
+            i == 403 ||
+            i == 316 ||
+            i == 15 ||
+            i == 86 ||
+            i == 179 ||
+            i == 89 ||
+            i == 96 ||
+            i == 62 ||
+            i == 183 ||
+            i == 42 ||
+            i == 41 ||
+            i == 38 ||
+            i == 11 ||
+            i == 302 ||
+            i == 303 ||
+            i == 304 ||
+            i == 408 ||
+            i == 306 ||
+            i == 307 ||
+            i == 320 ||
+            i == 404 ||
+            i == 315 ||
+            i == 16 ||
+            i == 85 ||
+            i == 180 ||
+            i == 90 ||
+            i == 77 ||
+            i == 76 ||
+            i == 184 ||
+            i == 74 ||
+            i == 73 ||
+            i == 72
+        ) {
+        } else {
+            mouthCanvasCtx.fillText(
+                "divination",
+                landmark_x_cropped,
+                landmarks_y_cropped[i]
+            );
+        }
+    });
+    console.log("divination");
+}
+
+function double_textbox() {
+    add_transition();
+
+    story_double.style.display = "grid";
+    remove_clippath();
+
+    story.style.border = "3px solid red";
+
+    console.log("double textbox");
 }
 
 //img_delay slows down the rate at which the .inner_img bg changes
 let img_delay = 0;
 
 function inner_image() {
+    restore_clippath();
+
     img_delay += 0.5;
     text_element.classList.add("inner_img");
     document.querySelector(".inner_img").style.backgroundImage =
@@ -821,4 +1354,32 @@ function inner_image() {
     if (img_index > 3) {
         img_index = 0;
     }
+}
+
+function stretch_image() {
+    remove_clippath();
+    lavender.style.display = "grid";
+
+    console.log("stretch image");
+}
+
+//??how to input html codes inside fillText??
+const double_left_quote = "&ldquo;";
+const double_right_quote = "&rdquo;";
+function end() {
+    clear_canvas();
+    mouthCanvasElement.style.background = "white";
+    mouthCanvasCtx.font = "60px serif";
+    mouthCanvasCtx.fillStyle = "black";
+
+    mouthCanvasCtx.fillText(
+        double_left_quote,
+        landmarks_x_cropped[61],
+        landmarks_y_cropped[61]
+    );
+    mouthCanvasCtx.fillText(
+        double_right_quote,
+        landmarks_x_cropped[291],
+        landmarks_y_cropped[291]
+    );
 }
