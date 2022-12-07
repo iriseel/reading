@@ -24,10 +24,13 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    font-size:42px;
-    line-height:30px;
-    color:lightpink;
     position: relative;
+
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif, sans-serif;
+    font-size: 40px;
+    line-height: 60px;
+    color: white;
+    text-align:center;
 
     overflow:hidden;
 
@@ -36,15 +39,7 @@ body {
 .container {
     width:inherit;
     height:inherit;
-    /* background: tomato; */
-    /* opacity: 0.25; */
-/*
-    position:relative;
-    display:flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center;
-*/
+
 }
 
 /*width and height stretch the 1280px x 720px canvas to fill the browser*/
@@ -57,6 +52,8 @@ canvas {
     z-index: -1;
 
     transition: filter 1s, width 1s, height 1s, top 1s, left 1s;
+
+    /* background:black; */
 }
 
 
@@ -97,11 +94,11 @@ canvas {
     /* background:blue; */
 }
 
-/* ?? lavender image isn't stretching with mouth? */
 .lavender img {
     width:100%;
     height:100%;
     object-fit:fill;
+    display:block;
 }
 
 /*clipping mask for text, which I am trying to map to landmark coordinates*/

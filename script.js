@@ -27,9 +27,12 @@ const audios = [
     document.querySelector(".ask_1"),
     document.querySelector(".ask_2"),
     document.querySelector(".ask_3"),
+    // index = 14
+    //??how do i get the transition between these divisions of one whole audio to be unnoticeable??
     document.querySelector(".how_1"),
     document.querySelector(".how_2"),
     document.querySelector(".how_3"),
+    // index = 17
     document.querySelector(".zhou_3"),
     document.querySelector(".zhou_4"),
     document.querySelector(".zhou_5"),
@@ -42,38 +45,42 @@ const audios = [
     document.querySelector(".doves_3"),
     document.querySelector(".lavender_1"),
     document.querySelector(".lavender_2"),
+    //index = 29
     document.querySelector(".lavender_3"),
     document.querySelector(".flowers_1"),
     document.querySelector(".flowers_2"),
+    document.querySelector(".end"),
+    document.querySelector(".end"),
 ];
 
 document.querySelectorAll("audio").loop = false;
-let index = 0;
+let index = 4;
 let audio = audios[index];
 const double_quotes_text =
     "&ldquo; &nbsp; &nbsp; &nbsp; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
 const double_single_quotes_text =
-    "&ldquo; &lsquo; &nbsp; &nbsp; &nbsp; &rsquo; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
+    "&ldquo; <span style='color:black'> &lsquo;&nbsp; &nbsp; &nbsp; &rsquo; </span> &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
 
 const texts = [
     "To speak is to repeat.",
-    "TEST",
+    "",
     "To speak is to release.",
-    "TEST",
+    "",
     "To speak is to relay.",
     "To speak is to be registered.",
     //index = 6
-    "TEST",
+    "",
     "To speak is to relinquish.",
     "To speak is to respire/refrain.",
-    "TEST",
+    "",
     "To speak is to resign.",
-    "TEST",
-    "TEST",
-    "TEST",
+    "",
+    "",
+    "",
     "To speak beyond speech. <br> How to say",
     "some",
     "thing.",
+    //index = 17
     "To speak is to regulate.",
     "To speak is to regulate.",
     "To speak is to regulate.",
@@ -86,10 +93,12 @@ const texts = [
     double_single_quotes_text.repeat(100),
     "To speak is to be relieved from oneself.",
     "To speak is to be relieved from oneself.",
+    //index = 29
     "To speak is to be relieved from oneself.",
-    "TEST",
-    "TEST",
+    "",
     "To speak is to resolve.",
+    "",
+    "",
 ];
 
 let text = texts[0];
@@ -135,8 +144,18 @@ updateVariableAfterSecond();
 //if the change is greater than 5, that means the user is probably speaking!
 function checkCurrentAbsRange() {
     let change = mouth_inner_distances - mouth_inner_distances_2;
-    if (change > 4) {
-        console.log("speaking");
+    //if breathing (pause_2) or noise audios are running, then have audios play even if user mouth movement is miniscule
+    if (
+        (index == 9 || index == 14 || index == 15 || index == 16) &&
+        change > 0
+    ) {
+        console.log("speaking anyway");
+        pause = 0;
+        audio.play();
+    }
+    //CHANGE > 4
+    else if (change > 4) {
+        // console.log("speaking");
         pause = 0;
         audio.play();
     } else {
@@ -150,18 +169,33 @@ function checkCurrentAbsRange() {
 //when one audio is finished playing, move to the next one
 audio.addEventListener("ended", change_audio);
 
+// multiple audios start playing at index  == 12??
+// multiple audios start playing at index == 17??
 function change_audio() {
-    index++;
-    audio = audios[index];
-    text = texts[index];
+    if (index >= 33) {
+    } else {
+        //??adding this audio.pause seems to ameliorate some of the multiple audios issues, but triggers errors. also, why??
+        audio.pause();
+        index++;
+        console.log("index:" + index);
+        //when b_noise = true, set audio so that it doesn't change with index (so sound is continuous)
+        // if (index == 14 || index == 15 || index == 16) {
+        //     audio = audios[14]
+        // }
 
-    // console.log("ended");
+        audio = audios[index];
+        text = texts[index];
 
-    audio.addEventListener("ended", change_audio);
+        console.log("audio:" + audio);
+
+        audio.addEventListener("ended", change_audio);
+    }
 }
 
 let landmarks_x_cropped = [];
 let landmarks_y_cropped = [];
+
+let ended = false;
 
 //FACEMESH STUFF
 // Results Handler
@@ -195,6 +229,11 @@ function onResults(results) {
                 results.multiFaceLandmarks[0][0].x * mouthCanvasElement.width;
             let landmark_0_y =
                 results.multiFaceLandmarks[0][0].y * mouthCanvasElement.height;
+
+            // let landmark_top_x = ewrbe;
+            // let landmark_bottom_x = arenwr;
+
+            // let mouth_face_percent = (landmark_0_y - landmark_17_y) / (landmark_bottom_y - landmark_top_y);
 
             let landmark_13_x =
                 results.multiFaceLandmarks[0][13].x * mouthCanvasElement.width;
@@ -269,73 +308,86 @@ function onResults(results) {
                 b_double_textbox_overlap = false,
                 b_inner_image = false,
                 b_stretch_image = false,
+                b_big_double_quotes = false,
                 b_end = false;
 
             //!! STORY BEATS!!
-            if (index == 1) {
+            if (index == 4) {
                 b_blur = true;
                 blur();
-            } else if (index == 2) {
+            } else if (index == 5) {
                 b_focus = true;
                 focus();
-            } else if (index == 3) {
+            } else if (index == 6) {
                 b_dots = true;
                 dots();
-            } else if (index == 4) {
+            } else if (index == 7) {
                 b_lines = true;
-            } else if (index == 5) {
+                console.log("lines");
+            } else if (index == 8) {
                 b_dots_inverted = true;
                 dots_inverted();
-            } else if (index == 6) {
+            } else if (index == 9) {
                 b_dots_quote = true;
-            } else if (index == 7) {
+                console.log("dots_quote");
+            } else if (index == 10) {
                 b_textbox = true;
                 textbox();
-            } else if (index == 8) {
+            } else if (index == 11) {
                 b_exterior = true;
                 exterior();
-            } else if (index == 9) {
+            } else if (index == 12) {
                 b_interior = true;
                 interior();
-            } else if (index == 10) {
+            } else if (index == 13) {
                 b_between = true;
                 between();
-            } else if (index == 11) {
+            } else if (index == 14 || index == 15 || index == 16) {
                 b_noise = true;
                 noise(mouth_outer_distances);
-            } else if (index == 12) {
+            } else if (index == 17) {
+                //???
+            } else if (index == 18) {
                 b_name = true;
                 to_name();
-            } else if (index == 13) {
+                console.log("to name");
+            } else if (index == 19) {
                 b_named = true;
                 named();
-            } else if (index == 14) {
-                b_translation = true;
-            } else if (index == 15) {
-                b_equivalent = true;
-            } else if (index == 16) {
-                b_equivocation = true;
-            } else if (index == 17) {
-                b_negotiation = true;
-            } else if (index == 18) {
-                b_divination = true;
-            } else if (index == 19 || index == 20) {
-                b_divination = true;
-                document.querySelector("body").style.color = "white";
+                console.log("to be named");
             } else if (index == 20) {
+                b_translation = true;
+            } else if (index == 21) {
+                b_equivalent = true;
+            } else if (index == 22) {
+                b_equivocation = true;
+            } else if (index == 23) {
+                b_negotiation = true;
+            } else if (index == 24) {
+                b_divination = true;
+                console.log("divination");
+            } else if (index == 25 || index == 26) {
+                b_divination = true;
+                console.log("divination");
+            } else if (index == 27) {
+                //???
+            } else if (index == 28) {
                 b_double_textbox_separate = true;
                 document.querySelector(".story_double p").innerHTML = text;
                 double_textbox();
-            } else if (index == 21) {
+            } else if (index == 29) {
                 b_double_textbox_overlap = true;
-            } else if (index == 22) {
+            } else if (index == 30) {
                 b_inner_image = true;
                 inner_image();
-            } else if (index == 23) {
+            } else if (index == 31) {
                 b_stretch_image = true;
                 stretch_image();
-            } else if (index == 24) {
+            } else if (index == 32) {
+                b_big_double_quotes = true;
+            } else if (index == 33) {
                 b_end = true;
+                end();
             }
 
             // draw landmarks on face
@@ -361,10 +413,12 @@ function onResults(results) {
                     landmarks_x_cropped.push(landmark_x_cropped);
                     landmarks_y_cropped.push(landmark_y_cropped);
 
-                    if (b_dots_inverted || b_name || b_named) {
-                    } else {
-                        mouthCanvasCtx.fillStyle = "red";
-                    }
+                    mouthCanvasElement.style.background = "black";
+
+                    mouthCanvasCtx.font = "20px Lucida Grande";
+
+                    mouthCanvasCtx.strokeStyle = "white";
+                    mouthCanvasCtx.fillStyle = "white";
 
                     //?? why does this if statement need to be inside landmarks.forEach to work? When I put it outside, with index == 1, it doesn't draw the lines??
                     if (b_dots || b_dots_inverted) {
@@ -386,37 +440,30 @@ function onResults(results) {
                     //?? How to cycle through multiple punctuations while still on index ==4??
                     //?? why does this seem to be running way past when b_dots_quote is true??
                     else if (b_dots_quote) {
-                        mouthCanvasCtx.font = "50px serif";
                         mouthCanvasCtx.fillText(
-                            "...",
+                            "(       )",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
-                        console.log("dots_quote");
                     } else if (b_name) {
-                        mouthCanvasCtx.font = "20px serif";
                         mouthCanvasCtx.fillText(
                             "to name",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
-                        console.log("to name");
                     } else if (b_named) {
-                        mouthCanvasCtx.font = "20px serif";
-                        mouthCanvasCtx.fillStyle = "green";
                         mouthCanvasCtx.fillText(
                             "to name",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
-                        mouthCanvasCtx.font = "40px serif";
+                        mouthCanvasCtx.font = "30px Lucida Grande";
                         mouthCanvasCtx.fillStyle = "red";
                         mouthCanvasCtx.fillText(
                             "to be named",
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
-                        console.log("to be named");
                     } else if (b_translation) {
                         translation();
                     } else if (b_equivalent) {
@@ -427,8 +474,8 @@ function onResults(results) {
                         negotiation();
                     } else if (b_divination) {
                         divination();
-                    } else if (b_end) {
-                        end();
+                    } else if (b_big_double_quotes) {
+                        big_double_quotes();
                     } else {
                     }
 
@@ -540,8 +587,8 @@ function onResults(results) {
 
                 if (b_double_textbox_separate) {
                     story_double.style.transform = `translate(${round(
-                        dv_points[13].x - textWidth / 1.5
-                    )}px ,${round(dv_points[14].y - textHeight / 1.5)}px)`;
+                        dv_points[13].x - textWidth / 1.25
+                    )}px ,${round(dv_points[14].y - textHeight / 1.75)}px)`;
 
                     story_double.style.height = `${Math.floor(textHeight)}px`;
 
@@ -670,9 +717,6 @@ function focus() {
 }
 
 function dots() {
-    clear_canvas();
-    mouthCanvasElement.style.background = "black";
-
     //??why doesn't this work??
     landmarks_x_cropped.forEach((landmark_x_cropped, i) => {
         mouthCanvasCtx.beginPath();
@@ -691,7 +735,7 @@ function dots() {
 }
 
 function lines() {
-    mouthCanvasCtx.strokeStyle = "red";
+    mouthCanvasCtx.lineWidth = 8;
 
     mouthCanvasCtx.beginPath();
     mouthCanvasCtx.moveTo(landmarks_x_cropped[191], landmarks_y_cropped[191]);
@@ -737,14 +781,10 @@ function lines() {
     mouthCanvasCtx.moveTo(landmarks_x_cropped[415], landmarks_y_cropped[415]);
     mouthCanvasCtx.lineTo(landmarks_x_cropped[324], landmarks_y_cropped[324]);
     mouthCanvasCtx.stroke();
-
-    console.log("lines");
 }
 
 function dots_inverted() {
     clear_canvas();
-    mouthCanvasElement.style.background = "red";
-    mouthCanvasCtx.fillStyle = "black";
 
     console.log("dots_inverted");
 }
@@ -799,29 +839,18 @@ function noise(mouth_outer_distances) {
     // Math.abs always returns a positive value
     audio.volume = Math.abs(mouth_outer_distances_volume);
 
-    //?? is this working? for this segment, trying to get the audio to play even if mouth isn't moving
-    pause = 0;
     console.log("noise");
 }
 
 function to_name() {
-    clear_canvas();
-    mouthCanvasElement.style.background = "black";
-    mouthCanvasCtx.fillStyle = "green";
-
     console.log("name");
 }
 
 function named() {
-    clear_canvas();
-    mouthCanvasElement.style.background = "black";
-
     console.log("named");
 }
 
 function translation() {
-    mouthCanvasCtx.font = "30px serif";
-    mouthCanvasCtx.fillStyle = "yellow";
     mouthCanvasCtx.fillText(
         "translation",
         landmarks_x_cropped[13],
@@ -927,7 +956,7 @@ function translation() {
 function equivalent() {
     translation();
 
-    mouthCanvasCtx.fillStyle = "orange";
+    mouthCanvasCtx.fillStyle = "black";
 
     mouthCanvasCtx.fillText(
         "equivalent",
@@ -1034,7 +1063,7 @@ function equivalent() {
 function equivocation() {
     equivalent();
 
-    mouthCanvasCtx.fillStyle = "purple";
+    mouthCanvasCtx.fillStyle = "white";
 
     mouthCanvasCtx.fillText(
         "equivocation",
@@ -1141,7 +1170,7 @@ function equivocation() {
 function negotiation() {
     equivocation();
 
-    mouthCanvasCtx.fillStyle = "pink";
+    mouthCanvasCtx.fillStyle = "black";
 
     mouthCanvasCtx.fillText(
         "negotiation",
@@ -1246,9 +1275,6 @@ function negotiation() {
 }
 
 function divination() {
-    mouthCanvasCtx.font = "20px serif";
-    mouthCanvasCtx.fillStyle = "white";
-
     landmarks_x_cropped.forEach((landmark_x_cropped, i) => {
         if (
             i == 13 ||
@@ -1320,7 +1346,6 @@ function divination() {
             );
         }
     });
-    console.log("divination");
 }
 
 function double_textbox() {
@@ -1340,6 +1365,10 @@ let img_delay = 0;
 function inner_image() {
     restore_clippath();
 
+    //get rid of the double textbox and border around story
+    story_double.style.display = "none";
+    story.style.border = "";
+
     img_delay += 0.5;
     text_element.classList.add("inner_img");
     document.querySelector(".inner_img").style.backgroundImage =
@@ -1358,28 +1387,37 @@ function inner_image() {
 
 function stretch_image() {
     remove_clippath();
-    lavender.style.display = "grid";
+    text_element.classList.remove("inner_img");
+    text_element.style.backgroundImage = "";
+    // display must be block for image to stretch with div!!
+    lavender.style.display = "block";
 
     console.log("stretch image");
 }
 
-//??how to input html codes inside fillText??
-const double_left_quote = "&ldquo;";
-const double_right_quote = "&rdquo;";
-function end() {
+function big_double_quotes() {
     clear_canvas();
-    mouthCanvasElement.style.background = "white";
-    mouthCanvasCtx.font = "60px serif";
-    mouthCanvasCtx.fillStyle = "black";
+    lavender.style.display = "none";
+
+    mouthCanvasCtx.font = "60px Lucida Grande";
 
     mouthCanvasCtx.fillText(
-        double_left_quote,
+        "“",
         landmarks_x_cropped[61],
         landmarks_y_cropped[61]
     );
     mouthCanvasCtx.fillText(
-        double_right_quote,
+        "”",
         landmarks_x_cropped[291],
         landmarks_y_cropped[291]
     );
+}
+
+//??how to write this function so that the big quotation marks just freeze on the last frame instead of continuing to jitter/update?
+function end() {
+    if (ended) {
+    } else {
+        big_double_quotes();
+        ended = true;
+    }
 }
