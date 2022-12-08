@@ -31,6 +31,7 @@ body {
     line-height: 60px;
     color: white;
     text-align:center;
+    text-shadow: 4px 4px 4px black;
 
     overflow:hidden;
 
@@ -70,31 +71,55 @@ canvas {
     display: grid;
     place-content: center;
 }
+
+.snap {
+    width: 100vw;
+    height: 100vh;
+    /* background:blue; */
+    position: absolute;
+    left:0;
+    right:0;
+    z-index:0;
+
+    display: grid;
+    place-content: center;
+    display:none;
+}
+
 .story, .story_double {
     position: absolute;
     z-index: 4;
+    /* ??text-align: justify of .story p doesn't work when display is grid?? */
     display: grid;
     place-content: center;
     min-height: 2em;
 
-    /* background:black; */
+    /* background:red; */
+}
+
+.story p {
+    min-width:6em;
+    /* background:blue; */
 }
 
 .story_double {
-    border: 3px solid red;
+    /* border: 3px solid red; */
+    mix-blend-mode: difference;
     display:none;
 
 }
 
-.lavender {
+.lavender, .parenthesis_left, .parenthesis_right {
     position: absolute;
     z-index: 5;
     display: none;
     place-content: center;
-    /* background:blue; */
+    background:blue;
 }
 
-.lavender img {
+.lavender img,
+.parenthesis_left img,
+.parenthesis_right img {
     width:100%;
     height:100%;
     object-fit:fill;
@@ -157,6 +182,33 @@ svg {
     animation: AnimateBG 10s ease infinite, rotate 10s ease infinite;
     
 }
+
+/* 
+.lavenders:before {
+    content: "";
+    position: absolute;
+    width: 2000px;
+    height: 2000px;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background-size: 100% 100%;
+    background-image: url(assets/img/lavenders_4.png);
+}
+
+.lavenders_text:before {
+    content: "";
+    position: absolute;
+    width: 2000px;
+    height: 2000px;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-size: 100% 100%;
+    background-image: url(assets/img/lavenders_4.png);
+    background-color:rgba(81, 148, 194, .5);
+} */
+
 
 .inner_img {
 background-position: center;

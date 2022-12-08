@@ -7,7 +7,10 @@ const mouthCanvasCtx = mouthCanvasElement.getContext("2d");
 const text_element = document.querySelector(".text");
 const story = document.querySelector(".story");
 const story_double = document.querySelector(".story_double");
+const snap = document.querySelector(".snap");
 const lavender = document.querySelector(".lavender");
+const parenthesis_left = document.querySelector(".parenthesis_left");
+const parenthesis_right = document.querySelector(".parenthesis_right");
 const exterior_element = document.querySelector(".exterior");
 
 const audios = [
@@ -49,37 +52,40 @@ const audios = [
     document.querySelector(".lavender_3"),
     document.querySelector(".flowers_1"),
     document.querySelector(".flowers_2"),
+    //index = 32
+    document.querySelector(".flowers_3"),
     document.querySelector(".end"),
     document.querySelector(".end"),
 ];
 
 document.querySelectorAll("audio").loop = false;
-let index = 4;
+let index = 13;
 let audio = audios[index];
 const double_quotes_text =
-    "&ldquo; &nbsp; &nbsp; &nbsp; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
+    "<span style='font-size:2em'>&ldquo; &nbsp; &nbsp; &nbsp; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;</span>";
 const double_single_quotes_text =
-    "&ldquo; <span style='color:black'> &lsquo;&nbsp; &nbsp; &nbsp; &rsquo; </span> &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;";
+    "<span style='font-size:2em'>&ldquo; <span style='color:black'> &lsquo;&nbsp; &nbsp; &nbsp; &rsquo; </span> &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;</span>";
 
 const texts = [
     "To speak is to repeat.",
-    "",
+    "To speak is to regurgitate.",
     "To speak is to release.",
-    "",
+    "To speak is to repurpose.",
     "To speak is to relay.",
     "To speak is to be registered.",
     //index = 6
-    "",
+    "To speak is to respond.",
     "To speak is to relinquish.",
-    "To speak is to respire/refrain.",
-    "",
-    "To speak is to resign.",
+    //have to add this empty span
+    "To speak is to refrain. <span style='width:100%; height:1em; display:inline-block'></span>",
+    "To speak is to resume.",
+    "To speak is to resign oneself.",
     "",
     "",
     "",
     "To speak beyond speech. <br> How to say",
     "some",
-    "thing.",
+    "thing",
     //index = 17
     "To speak is to regulate.",
     "To speak is to regulate.",
@@ -88,14 +94,19 @@ const texts = [
     "To speak is to regulate.",
     "To speak is to regulate.",
     "To speak is to regulate.",
+    //index = 24
     "To speak is to receive.",
-    double_quotes_text.repeat(100),
-    double_single_quotes_text.repeat(100),
+    "To speak is to receive.",
+    "To speak is to receive.",
+    // double_quotes_text.repeat(100),
+    // double_single_quotes_text.repeat(100),
     "To speak is to be relieved from oneself.",
     "To speak is to be relieved from oneself.",
     //index = 29
     "To speak is to be relieved from oneself.",
     "",
+    "",
+    //index = 32
     "To speak is to resolve.",
     "",
     "",
@@ -113,6 +124,24 @@ const imgs = [
 let img_index = 0;
 let img = imgs[img_index];
 
+const descriptions = [
+    "sunset",
+    "pavement",
+    "eyes",
+    "moon",
+    "shore",
+    "flowers",
+    "rain",
+    "skyline",
+    "skin",
+    "shadows",
+    "clouds",
+];
+let description_index = 0;
+let description = descriptions[description_index];
+
+const all_descriptions =
+    "sunset pavement eyes moon shore flowers rain skyline skin shadows clouds";
 let mouth_inner_distances = 0;
 let mouth_inner_distances_2;
 let pause = 0;
@@ -154,7 +183,7 @@ function checkCurrentAbsRange() {
         audio.play();
     }
     //CHANGE > 4
-    else if (change > 4) {
+    else if (change > 1) {
         // console.log("speaking");
         pause = 0;
         audio.play();
@@ -172,10 +201,10 @@ audio.addEventListener("ended", change_audio);
 // multiple audios start playing at index  == 12??
 // multiple audios start playing at index == 17??
 function change_audio() {
-    if (index >= 33) {
+    if (index >= 34) {
     } else {
-        //??adding this audio.pause seems to ameliorate some of the multiple audios issues, but triggers errors. also, why??
-        audio.pause();
+        //??adding audio.remove() or audio.pause() seems to ameliorate some of the multiple audios issues, but triggers errors. also, why??
+        audio.remove();
         index++;
         console.log("index:" + index);
         //when b_noise = true, set audio so that it doesn't change with index (so sound is continuous)
@@ -195,6 +224,8 @@ function change_audio() {
 let landmarks_x_cropped = [];
 let landmarks_y_cropped = [];
 
+//global booleans
+let screenshotted = false;
 let ended = false;
 
 //FACEMESH STUFF
@@ -285,16 +316,18 @@ function onResults(results) {
             landmarks_y_cropped = [];
 
             // booleans
-            let b_blur = false,
+            let b_doubled = false,
+                b_blur = false,
                 b_dots = false,
                 b_lines = false,
                 b_dots_inverted = false,
-                b_dots_quote = false,
+                b_dots_parenthesis = false,
                 b_textbox = false,
                 b_exterior = false,
                 b_interior = false,
                 b_between = false,
                 b_noise = false,
+                b_stretch_parentheses = false,
                 b_name = false,
                 b_named = false,
                 b_translation = false,
@@ -306,13 +339,19 @@ function onResults(results) {
                 b_double_single_quotes = false,
                 b_double_textbox_separate = false,
                 b_double_textbox_overlap = false,
-                b_inner_image = false,
-                b_stretch_image = false,
+                // b_inner_image = false,
+                b_inner_description = false,
+                b_text_wall = false,
+                // (b_stretch_image = false,
+                b_resolve = false,
                 b_big_double_quotes = false,
                 b_end = false;
 
             //!! STORY BEATS!!
-            if (index == 4) {
+            if (index == 3) {
+                b_doubled = true;
+                doubled();
+            } else if (index == 4) {
                 b_blur = true;
                 blur();
             } else if (index == 5) {
@@ -328,8 +367,9 @@ function onResults(results) {
                 b_dots_inverted = true;
                 dots_inverted();
             } else if (index == 9) {
-                b_dots_quote = true;
-                console.log("dots_quote");
+                b_dots_parenthesis = true;
+                dots_parenthesis();
+                console.log("dots_parenthesis");
             } else if (index == 10) {
                 b_textbox = true;
                 textbox();
@@ -344,9 +384,11 @@ function onResults(results) {
                 between();
             } else if (index == 14 || index == 15 || index == 16) {
                 b_noise = true;
+                b_stretch_parentheses = true;
                 noise(mouth_outer_distances);
+                stretch_parentheses();
             } else if (index == 17) {
-                //???
+                remove_parentheses();
             } else if (index == 18) {
                 b_name = true;
                 to_name();
@@ -366,9 +408,12 @@ function onResults(results) {
             } else if (index == 24) {
                 b_divination = true;
                 console.log("divination");
-            } else if (index == 25 || index == 26) {
-                b_divination = true;
-                console.log("divination");
+            } else if (index == 25) {
+                b_double_quotes = true;
+                console.log("big double quotes");
+            } else if (index == 26) {
+                b_double_single_quotes = true;
+                console.log("big double + single quotes");
             } else if (index == 27) {
                 //???
             } else if (index == 28) {
@@ -378,14 +423,21 @@ function onResults(results) {
             } else if (index == 29) {
                 b_double_textbox_overlap = true;
             } else if (index == 30) {
-                b_inner_image = true;
-                inner_image();
+                // b_inner_image = true;
+                // inner_image();
+                b_inner_description = true;
+                inner_description();
             } else if (index == 31) {
-                b_stretch_image = true;
-                stretch_image();
+                b_text_wall = true;
+                text_wall();
             } else if (index == 32) {
-                b_big_double_quotes = true;
+                // b_stretch_image = true;
+                // stretch_image();
+                b_resolve = true;
+                resolve();
             } else if (index == 33) {
+                b_big_double_quotes = true;
+            } else if (index == 34) {
                 b_end = true;
                 end();
             }
@@ -438,8 +490,8 @@ function onResults(results) {
                         lines();
                     }
                     //?? How to cycle through multiple punctuations while still on index ==4??
-                    //?? why does this seem to be running way past when b_dots_quote is true??
-                    else if (b_dots_quote) {
+                    //?? why does this seem to be running way past when b_dots_parenthesis is true??
+                    else if (b_dots_parenthesis) {
                         mouthCanvasCtx.fillText(
                             "(       )",
                             landmark_x_cropped,
@@ -457,8 +509,8 @@ function onResults(results) {
                             landmark_x_cropped,
                             landmark_y_cropped
                         );
-                        mouthCanvasCtx.font = "30px Lucida Grande";
-                        mouthCanvasCtx.fillStyle = "red";
+                        mouthCanvasCtx.font = "26px Lucida Grande";
+                        mouthCanvasCtx.fillStyle = "black";
                         mouthCanvasCtx.fillText(
                             "to be named",
                             landmark_x_cropped,
@@ -473,7 +525,11 @@ function onResults(results) {
                     } else if (b_negotiation) {
                         negotiation();
                     } else if (b_divination) {
-                        divination();
+                        divination(b_double_quotes);
+                    } else if (b_double_quotes) {
+                        double_quotes();
+                    } else if (b_double_single_quotes) {
+                        double_single_quotes();
                     } else if (b_big_double_quotes) {
                         big_double_quotes();
                     } else {
@@ -531,11 +587,13 @@ function onResults(results) {
                 polygon_path += `${svg_points[82].x}% ${svg_points[82].y}%, `;
                 polygon_path += `${svg_points[13].x}% ${svg_points[13].y}% `;
 
-                let polygon_clipped =
-                    document.querySelector(".polygon-clipped");
-                if (polygon_clipped) {
-                    polygon_clipped.style.clipPath =
-                        "polygon(" + polygon_path + ")";
+                let polygons_clipped =
+                    document.querySelectorAll(".polygon-clipped");
+                if (polygons_clipped) {
+                    polygons_clipped.forEach((polygon_clipped, i) => {
+                        polygon_clipped.style.clipPath =
+                            "polygon(" + polygon_path + ")";
+                    });
                 }
 
                 // this section of code is for inverting the mask, and although it uses the same units as polygon_path it must be rewritten slightly differently since setting coordinates for a polygon needs to be written differently from those of an svg
@@ -594,6 +652,7 @@ function onResults(results) {
 
                     story_double.style.width = `${Math.floor(textWidth)}px`;
                 } else if (b_double_textbox_overlap) {
+                    //??how to get this to overlap perfectly with story?
                     story_double.style.transform = `translate(${round(
                         dv_points[13].x - textWidth / 2
                     )}px ,${round(dv_points[14].y - textHeight)}px)`;
@@ -601,14 +660,35 @@ function onResults(results) {
                     story_double.style.height = `${Math.floor(textHeight)}px`;
 
                     story_double.style.width = `${Math.floor(textWidth)}px`;
-                } else if (b_stretch_image) {
-                    lavender.style.transform = `translate(${round(
-                        dv_points[13].x - textWidth / 2
-                    )}px ,${round(dv_points[14].y - textHeight)}px)`;
+                } else if (b_stretch_parentheses) {
+                    //??why is this positioning not working?? right now parentheses are going off screen
+                    parenthesis_left.style.left = landmarks_x_cropped[61];
 
-                    lavender.style.height = `${Math.floor(textHeight)}px`;
+                    parenthesis_left.style.top = landmarks_y_cropped[61];
 
-                    lavender.style.width = `${Math.floor(textWidth)}px`;
+                    parenthesis_right.style.left = landmarks_x_cropped[291];
+
+                    parenthesis_right.style.top = landmarks_y_cropped[291];
+
+                    parenthesis_left.style.height = `${Math.floor(
+                        textHeight
+                    )}px`;
+
+                    parenthesis_right.style.height = `${Math.floor(
+                        textHeight
+                    )}px`;
+
+                    console.log("left:" + landmarks_x_cropped[61]);
+                    console.log("right:" + landmarks_x_cropped[291]);
+                    // } else if (b_stretch_image) {
+                    //     //lavender/img stretch styling
+                    //     lavender.style.transform = `translate(${round(
+                    //         dv_points[13].x - textWidth / 2
+                    //     )}px ,${round(dv_points[14].y - textHeight)}px)`;
+
+                    //     lavender.style.height = `${Math.floor(textHeight)}px`;
+
+                    //     lavender.style.width = `${Math.floor(textWidth)}px`;
                 }
             }
 
@@ -673,7 +753,7 @@ function add_transition() {
     story.style.transition = "transform 0s ease-in-out";
 
     setTimeout(() => {
-        story.style.transition = "transform 1s ease-in-out";
+        story.style.transition = "transform .5s ease-in-out";
     }, 500);
 }
 
@@ -692,6 +772,20 @@ function restore_clippath() {
 // ===============================
 // Specific / storyline functions
 
+function doubled() {
+    snap.style.display = "block";
+
+    if (screenshotted) {
+    } else {
+        //screenshotting from webcam code from https://www.studytonight.com/post/capture-photo-using-webcam-in-javascript
+        //??is there a way to make the screenshot slightly enlarged? and then make it live video feed??
+        let data = mouthCanvasElement.toDataURL("image/png");
+        snap.setAttribute("src", data);
+        screenshotted = true;
+    }
+    console.log("doubled");
+}
+
 function blur() {
     mouthCanvasElement.style.filter = "blur(30px)";
     //enlarge the canvas a little so that the blurred edges don't appear onscreen
@@ -705,6 +799,8 @@ function blur() {
 }
 
 function focus() {
+    snap.remove();
+
     mouthCanvasElement.style.filter = "";
     mouthCanvasElement.style.width = "100vw";
     mouthCanvasElement.style.height = "100vh";
@@ -785,8 +881,14 @@ function lines() {
 
 function dots_inverted() {
     clear_canvas();
+    //get word spacing to expand horizontally with mouth
+    story.style.textAlignLast = "justify";
 
     console.log("dots_inverted");
+}
+
+function dots_parenthesis() {
+    story.style.textAlignLast = "";
 }
 
 function textbox() {
@@ -794,7 +896,9 @@ function textbox() {
 
     remove_clippath();
 
-    story.style.background = "red";
+    story.style.background = "white";
+    story.style.color = "red";
+    story.style.mixBlendMode = "saturation";
 
     story.style.height = `${round(textHeight)}px`;
     story.style.width = `${round(textWidth)}px`;
@@ -804,6 +908,11 @@ function textbox() {
 
 function exterior() {
     add_transition();
+
+    story.style.background = "";
+    story.style.color = "white";
+    story.style.mixBlendMode = "";
+
     exterior_element.style.display = "block";
     exterior_element.classList.add("bg_gradient");
 
@@ -840,6 +949,24 @@ function noise(mouth_outer_distances) {
     audio.volume = Math.abs(mouth_outer_distances_volume);
 
     console.log("noise");
+}
+
+//this function is for stretching parenthesis, based off of stretch_image()
+function stretch_parentheses() {
+    // remove_clippath();
+
+    // display must be block for image to stretch with div!!
+    parenthesis_left.style.display = "block";
+    parenthesis_right.style.display = "block";
+
+    console.log("stretch image");
+}
+
+function remove_parentheses() {
+    restore_clippath();
+
+    parenthesis_left.style.display = "none";
+    parenthesis_right.style.display = "none";
 }
 
 function to_name() {
@@ -1348,56 +1475,140 @@ function divination() {
     });
 }
 
+function double_quotes() {
+    mouthCanvasCtx.font = "180px Lucida Grande";
+    mouthCanvasCtx.textBaseline = "top";
+    mouthCanvasCtx.fillText(
+        "“",
+        landmarks_x_cropped[57],
+        landmarks_y_cropped[57]
+    );
+    mouthCanvasCtx.fillText(
+        "”",
+        landmarks_x_cropped[287],
+        landmarks_y_cropped[287]
+    );
+}
+
+function double_single_quotes() {
+    double_quotes();
+    mouthCanvasCtx.fillStyle = "black";
+
+    //?? is there a way to get these to align better with the double quotes in double_quotes(?)
+    mouthCanvasCtx.fillText(
+        "‘",
+        landmarks_x_cropped[61],
+        landmarks_y_cropped[61]
+    );
+    mouthCanvasCtx.fillText(
+        "’",
+        landmarks_x_cropped[291],
+        landmarks_y_cropped[291]
+    );
+}
+
 function double_textbox() {
     add_transition();
 
     story_double.style.display = "grid";
     remove_clippath();
 
-    story.style.border = "3px solid red";
+    // story.style.border = "3px solid red";
 
     console.log("double textbox");
 }
 
-//img_delay slows down the rate at which the .inner_img bg changes
-let img_delay = 0;
+let description_delay = 0;
 
-function inner_image() {
+//this is for looping text
+function inner_description() {
     restore_clippath();
 
     //get rid of the double textbox and border around story
     story_double.style.display = "none";
-    story.style.border = "";
+    // story.style.border = "";
 
-    img_delay += 0.5;
-    text_element.classList.add("inner_img");
-    document.querySelector(".inner_img").style.backgroundImage =
-        "url('" + imgs[img_index] + "')";
+    description_delay += 0.3;
+    text_element.style.fontSize = "4em";
+    text = descriptions[description_index];
 
-    if (img_delay > 1) {
-        img_index++;
-        img_delay = 0;
+    if (description_delay > 1) {
+        description_index++;
+        description_delay = 0;
     }
 
-    //loop the images
-    if (img_index > 3) {
-        img_index = 0;
+    //loop the descriptions
+    if (description_index >= descriptions.length) {
+        description_index = 0;
     }
 }
 
-function stretch_image() {
-    remove_clippath();
-    text_element.classList.remove("inner_img");
-    text_element.style.backgroundImage = "";
-    // display must be block for image to stretch with div!!
-    lavender.style.display = "block";
+//this is for looping images
+// //img_delay slows down the rate at which the .inner_img bg changes
+// let img_delay = 0;
 
-    console.log("stretch image");
+// function inner_image() {
+//     restore_clippath();
+
+//     //get rid of the double textbox and border around story
+//     story_double.style.display = "none";
+//     // story.style.border = "";
+
+//     img_delay += 0.5;
+//     text_element.classList.add("inner_img");
+//     document.querySelector(".inner_img").style.backgroundImage =
+//         "url('" + imgs[img_index] + "')";
+
+//     if (img_delay > 1) {
+//         img_index++;
+//         img_delay = 0;
+//     }
+
+//     //loop the images
+//     if (img_index > 3) {
+//         img_index = 0;
+//     }
+// }
+
+function text_wall() {
+    text_element.style.fontSize = "1.5em";
+    text_element.style.lineHeight = ".5em";
+    text = all_descriptions.repeat(10);
+}
+
+//this function is for stretching images
+// function stretch_image() {
+//     //optional
+//     remove_clippath();
+//     text_element.classList.remove("inner_img");
+//     //optional
+//     text_element.classList.add("lavenders_text");
+//     text_element.style.backgroundImage = "";
+
+//     //optional
+//     text_element.style.backgroundImage = "url(assets/img/lavenders_4.png)";
+
+//     // display must be block for image to stretch with div!!
+//     lavender.style.display = "block";
+
+//     //optional
+//     add_transition();
+//     exterior_element.style.display = "block";
+//     exterior_element.classList.add("lavenders");
+
+//     console.log("stretch image");
+// }
+
+function resolve() {
+    remove_clippath();
+
+    text_element.style.fontSize = "3em";
+    text_element.style.lineHeight = "1em";
 }
 
 function big_double_quotes() {
     clear_canvas();
-    lavender.style.display = "none";
+    // lavender.style.display = "none";
 
     mouthCanvasCtx.font = "60px Lucida Grande";
 
