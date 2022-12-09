@@ -678,16 +678,17 @@ function onResults(results) {
                     story_double.style.width = `${Math.floor(textWidth)}px`;
                 } else if (b_stretch_parentheses) {
                     //??something is wrong with the positioning? dpeending on the screen size, positioning is off or ok?
+                    //rn hacking it with *1.25 and * 1.5for fullscreen
                     //!don't forget the px!!!!
                     parenthesis_left.style.left =
-                        landmarks_x_cropped[61] + "px";
+                        landmarks_x_cropped[61] * 1.25 + "px";
 
                     //don't ask me why it's textHeight / 4 instead of / 2, but this centers the parentheses correctly....
                     parenthesis_left.style.top =
                         landmarks_y_cropped[61] - textHeight / 4 + "px";
 
                     parenthesis_right.style.left =
-                        landmarks_x_cropped[291] + "px";
+                        landmarks_x_cropped[291] * 1.45 + "px";
 
                     parenthesis_right.style.top =
                         landmarks_y_cropped[291] - textHeight / 4 + "px";
@@ -955,14 +956,21 @@ function between() {
     console.log("between");
 }
 
+let mouth_face_ratio_volume = 0;
 function noise(mouth_face_ratio) {
     exterior_element.style.display = "none";
     text_element.classList.remove("bg_gradient");
 
     // console.log("mouth_face_ratio is" + mouth_face_ratio);
     // console.log("volume is:" + audio.volume);
+    //add this if statement or else website breaks when mouth_face_ratio is out of range
+    if (mouth_face_ratio >= 1 && mouth_face_ratio <= 20) {
+        mouth_face_ratio_volume = map(mouth_face_ratio, 1, 20, 0, 1);
+        // console.log("mouth_face_ratio is IN range");
+    } else {
+        // console.log("mouth_face_ratio is OUT OF range");
+    }
 
-    let mouth_face_ratio_volume = map(mouth_face_ratio, 1, 20, 0, 1);
     // Math.abs always returns a positive value
     audio.volume = Math.abs(mouth_face_ratio_volume);
 

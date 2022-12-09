@@ -126,7 +126,7 @@ canvas {
     z-index: 5;
     display: none;
     place-content: center;
-    background:blue;
+    /* background:blue; */
 }
 
 .lavender img,
