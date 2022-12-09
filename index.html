@@ -1,228 +1,221 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
-    
-    <link rel="stylesheet" href="style.css">
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <script
+            src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+            crossorigin="anonymous"
+        ></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"
+            crossorigin="anonymous"
+        ></script>
 
-<body>
+        <link rel="stylesheet" href="style.css" />
+    </head>
 
-    <img class="snap polygon-clipped">
-<div class="exterior polygon-clipped-inverted"></div>
-    
-    <div class="container">
-        <div class="text polygon-clipped">
-            <div class="story">
-                <p>
-                     To speak is to repeat.
-                </p>
-            </div>
-            
-            <div class="story_double">
-                <p>
-                    To speak is to repeat.
-                </p>
-            </div>
+    <body>
+<div class="black_screen"></div>
 
-        <!-- <div class="lavender">
+        <img class="snap polygon-clipped" />
+        <div class="exterior polygon-clipped-inverted"></div>
+
+        <div class="container">
+            <div class="text polygon-clipped">
+                <div class="story">
+                    <p>To speak is to repeat.</p>
+                </div>
+
+                <div class="story_double">
+                    <p>To speak is to repeat.</p>
+                </div>
+
+                <!-- <div class="lavender">
             <img src="assets/img/lavender_2.png">
-        </div> -->
-        
-       </div>
+            </div> -->
+            </div>
 
-    <div class="parenthesis_left">
-        <img src="assets/img/parenthesis_left.svg">
-        <!-- <img src="assets/img/parenthesis_left.png"> -->
-    </div>
-    
-    <div class="parenthesis_right">
-        <img src="assets/img/parenthesis_right.svg">
-    </div>
+            <div class="parenthesis_left">
+                <img src="assets/img/parenthesis_left.svg" />
+                <!-- <img src="assets/img/parenthesis_left.png"> -->
+            </div>
 
-    </div>
-    
-    <video class="input_video"></video>
-    <canvas class="mouth_canvas" width="1280px" height="720px"></canvas>
-    
-    <audio class="dictee">
-        <source src="assets/audio/Dictee.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+            <div class="parenthesis_right">
+                <img src="assets/img/parenthesis_right.svg" />
+            </div>
+        </div>
 
-    <audio class="ventriloquism_1">
-        <source src="assets/audio/Ventriloquism_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <video class="input_video"></video>
+        <canvas class="mouth_canvas" width="1280px" height="720px"></canvas>
 
-    <audio class="ventriloquism_2">
-        <source src="assets/audio/Ventriloquism_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="dictee">
+            <source src="assets/audio/Dictee.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="spectacle_1">
-        <source src="assets/audio/Spectacle_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="ventriloquism_1">
+            <source src="assets/audio/Ventriloquism_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="spectacle_2">
-        <source src="assets/audio/Spectacle_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="ventriloquism_2">
+            <source src="assets/audio/Ventriloquism_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="wow">
-        <source src="assets/audio/Wow.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="spectacle_1">
+            <source src="assets/audio/Spectacle_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_1">
-        <source src="assets/audio/Zhou_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="spectacle_2">
+            <source src="assets/audio/Spectacle_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_2">
-        <source src="assets/audio/Zhou_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="wow">
+            <source src="assets/audio/Wow.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="pause_1">
-        <source src="assets/audio/Pause_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_1">
+            <source src="assets/audio/Zhou_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="pause_2">
-        <source src="assets/audio/Pause_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_2">
+            <source src="assets/audio/Zhou_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="monolingualism">
-        <source src="assets/audio/Monolingualism.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="pause_1">
+            <source src="assets/audio/Pause_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="ask_1">
-        <source src="assets/audio/Ask_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="pause_2">
+            <source src="assets/audio/Pause_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="ask_2">
-        <source src="assets/audio/Ask_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="monolingualism">
+            <source src="assets/audio/Monolingualism.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="ask_3">
-        <source src="assets/audio/Ask_3.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="ask_1">
+            <source src="assets/audio/Ask_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="how_1">
-        <source src="assets/audio/How_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="ask_2">
+            <source src="assets/audio/Ask_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="how_2">
-        <source src="assets/audio/How_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="ask_3">
+            <source src="assets/audio/Ask_3.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="how_3">
-        <source src="assets/audio/How_3.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="noise">
+            <source src="assets/audio/white_noise_15s.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_3">
-        <source src="assets/audio/Zhou_3.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_3">
+            <source src="assets/audio/Zhou_3.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_4">
-        <source src="assets/audio/Zhou_4.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_4">
+            <source src="assets/audio/Zhou_4.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_5">
-        <source src="assets/audio/Zhou_5.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_5">
+            <source src="assets/audio/Zhou_5.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_6">
-        <source src="assets/audio/Zhou_6.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_6">
+            <source src="assets/audio/Zhou_6.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_7">
-        <source src="assets/audio/Zhou_7.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_7">
+            <source src="assets/audio/Zhou_7.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_8">
-        <source src="assets/audio/Zhou_8.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_8">
+            <source src="assets/audio/Zhou_8.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="zhou_9">
-        <source src="assets/audio/Zhou_9.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="zhou_9">
+            <source src="assets/audio/Zhou_9.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="doves_1">
-        <source src="assets/audio/Doves_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="doves_1">
+            <source src="assets/audio/Doves_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="doves_2">
-        <source src="assets/audio/Doves_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="doves_2">
+            <source src="assets/audio/Doves_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="doves_3">
-        <source src="assets/audio/Doves_3.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="doves_3">
+            <source src="assets/audio/Doves_3.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="lavender_1">
-        <source src="assets/audio/Lavender_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="lavender_1">
+            <source src="assets/audio/Lavender_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="lavender_2">
-        <source src="assets/audio/Lavender_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="lavender_2">
+            <source src="assets/audio/Lavender_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="lavender_3">
-        <source src="assets/audio/Lavender_3.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="lavender_3">
+            <source src="assets/audio/Lavender_3.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="flowers_1">
-        <source src="assets/audio/Flowers_1.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="flowers_1">
+            <source src="assets/audio/Flowers_1.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="flowers_2">
-        <source src="assets/audio/Flowers_2.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="flowers_2">
+            <source src="assets/audio/Flowers_2.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="flowers_3">
-        <source src="assets/audio/Flowers_3.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="flowers_3">
+            <source src="assets/audio/Flowers_3.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    <audio class="end">
-        <source src="assets/audio/silence.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
+        <audio class="end">
+            <source src="assets/audio/silence.mp3" type="audio/mpeg" />
+            Your browser does not support the audio element.
+        </audio>
 
-    
-    
-    
-    <script src="script.js"></script>
-</body>
+        <script src="script.js"></script>
+    </body>
 </html>
-

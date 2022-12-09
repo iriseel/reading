@@ -32,10 +32,8 @@ const audios = [
     document.querySelector(".ask_3"),
     // index = 14
     //??how do i get the transition between these divisions of one whole audio to be unnoticeable??
-    document.querySelector(".how_1"),
-    document.querySelector(".how_2"),
-    document.querySelector(".how_3"),
-    // index = 17
+    document.querySelector(".noise"),
+    // index = 15
     document.querySelector(".zhou_3"),
     document.querySelector(".zhou_4"),
     document.querySelector(".zhou_5"),
@@ -48,18 +46,25 @@ const audios = [
     document.querySelector(".doves_3"),
     document.querySelector(".lavender_1"),
     document.querySelector(".lavender_2"),
-    //index = 29
+    //index = 27
     document.querySelector(".lavender_3"),
     document.querySelector(".flowers_1"),
     document.querySelector(".flowers_2"),
-    //index = 32
+    //index = 30
     document.querySelector(".flowers_3"),
     document.querySelector(".end"),
     document.querySelector(".end"),
 ];
 
+//find duration of audio so I can set CurrentTime accordingly
+let noise_duration = 0;
+audios[14].addEventListener("loadedmetadata", function () {
+    noise_duration = audios[14].duration;
+    console.log("duration:" + noise_duration);
+});
+
 document.querySelectorAll("audio").loop = false;
-let index = 13;
+let index = 0;
 let audio = audios[index];
 const double_quotes_text =
     "<span style='font-size:2em'>&ldquo; &nbsp; &nbsp; &nbsp; &rdquo; &nbsp; &nbsp; &nbsp; &nbsp;</span>";
@@ -76,17 +81,14 @@ const texts = [
     //index = 6
     "To speak is to respond.",
     "To speak is to relinquish.",
-    //have to add this empty span
-    "To speak is to refrain. <span style='width:100%; height:1em; display:inline-block'></span>",
+    "To speak is to refrain.",
     "To speak is to resume.",
     "To speak is to resign oneself.",
     "",
     "",
     "",
     "To speak beyond speech. <br> How to say",
-    "some",
-    "thing",
-    //index = 17
+    //index = 15
     "To speak is to regulate.",
     "To speak is to regulate.",
     "To speak is to regulate.",
@@ -94,7 +96,7 @@ const texts = [
     "To speak is to regulate.",
     "To speak is to regulate.",
     "To speak is to regulate.",
-    //index = 24
+    //index = 22
     "To speak is to receive.",
     "To speak is to receive.",
     "To speak is to receive.",
@@ -102,11 +104,11 @@ const texts = [
     // double_single_quotes_text.repeat(100),
     "To speak is to be relieved from oneself.",
     "To speak is to be relieved from oneself.",
-    //index = 29
+    //index = 27
     "To speak is to be relieved from oneself.",
     "",
     "",
-    //index = 32
+    //index = 30
     "To speak is to resolve.",
     "",
     "",
@@ -146,15 +148,13 @@ let mouth_inner_distances = 0;
 let mouth_inner_distances_2;
 let pause = 0;
 
-let mouth_outer_distances = 0;
-
 let svg_path = "";
 let svg_points = [];
 let dv_points = [];
 let textWidth;
 let textHeight;
 
-function calcDistance(x1, y1, x2, y2) {
+function calcDistances(x1, y1, x2, y2) {
     return Math.hypot(x1 - x2, y1 - y2);
 }
 
@@ -173,20 +173,26 @@ updateVariableAfterSecond();
 //if the change is greater than 5, that means the user is probably speaking!
 function checkCurrentAbsRange() {
     let change = mouth_inner_distances - mouth_inner_distances_2;
-    //if breathing (pause_2) or noise audios are running, then have audios play even if user mouth movement is miniscule
-    if (
-        (index == 9 || index == 14 || index == 15 || index == 16) &&
-        change > 0
-    ) {
-        console.log("speaking anyway");
+    // console.log("check audio:", audio);
+    //if breathing (pause_2) or noise audios are running, then have audios play even if user mouth movement is miniscule (change > 0)
+    if ((index == 9 || index == 14 || index >= 31) && change > 0) {
         pause = 0;
-        audio.play();
+        //?? trying to get rid of the console error when it tries to play an old audio!
+        //error being: "Uncaught (in promise) DOMException: The play() request was interrupted because the media was removed from the document"
+        //ternary statement: if audio exists, audio.play(). if not, do nothing
+        audio ? audio.play() : null;
+
+        // console.log(audio);
+        // console.log("speaking anyway");
     }
     //CHANGE > 4
-    else if (change > 1) {
-        // console.log("speaking");
+    else if (change > 4) {
         pause = 0;
-        audio.play();
+
+        audio ? audio.play() : null;
+        // console.log(audio);
+
+        // console.log("speaking");
     } else {
         pause++;
         if (pause > 16) {
@@ -198,24 +204,19 @@ function checkCurrentAbsRange() {
 //when one audio is finished playing, move to the next one
 audio.addEventListener("ended", change_audio);
 
-// multiple audios start playing at index  == 12??
-// multiple audios start playing at index == 17??
 function change_audio() {
-    if (index >= 34) {
+    if (index >= 32) {
     } else {
-        //??adding audio.remove() or audio.pause() seems to ameliorate some of the multiple audios issues, but triggers errors. also, why??
+        //add audio.remove() or audio.pause(), or else multiple audios start playing like 12 change_audio() in. Could be because of time misalignment btw checkCurrentAbsRange() and change_audio()
         audio.remove();
         index++;
-        console.log("index:" + index);
-        //when b_noise = true, set audio so that it doesn't change with index (so sound is continuous)
-        // if (index == 14 || index == 15 || index == 16) {
-        //     audio = audios[14]
-        // }
+        add_transition();
 
         audio = audios[index];
         text = texts[index];
 
-        console.log("audio:" + audio);
+        console.log("index:" + index);
+        // console.log("change audio:", audio);
 
         audio.addEventListener("ended", change_audio);
     }
@@ -231,8 +232,9 @@ let ended = false;
 //FACEMESH STUFF
 // Results Handler
 function onResults(results) {
+    remove_black_screen();
     //need this if statement, or else video freezes when it can't find the multiFaceLandmarks (e.g. when user has turned their head away from the camera)
-    if (results.multiFaceLandmarks) {
+    if (results.multiFaceLandmarks && !ended) {
         //needs [0] bc the array of results.multiFaceLandmarks has multiple things inside it, but facemesh points are stored in [0]
         if (results.multiFaceLandmarks[0]) {
             //The facemesh points 212, 64, 432, and 200 are going to be the outer limits of the crop of the webcam view (mouthCanvasElement) that is shown on my website. They are based off of the points found in https://raw.githubusercontent.com/google/mediapipe/master/mediapipe/modules/face_geometry/data/canonical_face_model_uv_visualization.png
@@ -261,10 +263,15 @@ function onResults(results) {
             let landmark_0_y =
                 results.multiFaceLandmarks[0][0].y * mouthCanvasElement.height;
 
-            // let landmark_top_x = ewrbe;
-            // let landmark_bottom_x = arenwr;
-
-            // let mouth_face_percent = (landmark_0_y - landmark_17_y) / (landmark_bottom_y - landmark_top_y);
+            //will use this mouth_face_ratio later for noise(mouth_face_ratio) — this returns the ratio as a percentage (percentage of face that mouth takes up) rather than absolute values, and therefore mouth_face_ratio (and consequently volume) won't change with the user's distance from the webcam
+            let landmark_152_y =
+                results.multiFaceLandmarks[0][152].y * mouthCanvasElement.width;
+            let landmark_10_y =
+                results.multiFaceLandmarks[0][10].y * mouthCanvasElement.width;
+            let mouth_face_ratio =
+                ((landmark_17_y - landmark_0_y) /
+                    (landmark_152_y - landmark_10_y)) *
+                100;
 
             let landmark_13_x =
                 results.multiFaceLandmarks[0][13].x * mouthCanvasElement.width;
@@ -275,18 +282,11 @@ function onResults(results) {
             let landmark_14_x =
                 results.multiFaceLandmarks[0][14].x * mouthCanvasElement.width;
 
-            mouth_inner_distances = calcDistance(
+            mouth_inner_distances = calcDistances(
                 landmark_14_x,
                 landmark_14_y,
                 landmark_13_x,
                 landmark_13_y
-            );
-
-            mouth_outer_distances = calcDistance(
-                landmark_17_x,
-                landmark_17_y,
-                landmark_0_x,
-                landmark_0_y
             );
 
             checkCurrentAbsRange();
@@ -382,62 +382,63 @@ function onResults(results) {
             } else if (index == 13) {
                 b_between = true;
                 between();
-            } else if (index == 14 || index == 15 || index == 16) {
+            } else if (index == 14) {
                 b_noise = true;
                 b_stretch_parentheses = true;
-                noise(mouth_outer_distances);
+                noise(mouth_face_ratio);
                 stretch_parentheses();
-            } else if (index == 17) {
+            } else if (index == 15) {
                 remove_parentheses();
-            } else if (index == 18) {
+            } else if (index == 16) {
                 b_name = true;
                 to_name();
-                console.log("to name");
-            } else if (index == 19) {
+                // console.log("to name");
+            } else if (index == 17) {
                 b_named = true;
                 named();
-                console.log("to be named");
-            } else if (index == 20) {
+                // console.log("to be named");
+            } else if (index == 18) {
                 b_translation = true;
-            } else if (index == 21) {
+            } else if (index == 19) {
                 b_equivalent = true;
-            } else if (index == 22) {
+            } else if (index == 20) {
                 b_equivocation = true;
-            } else if (index == 23) {
+            } else if (index == 21) {
                 b_negotiation = true;
-            } else if (index == 24) {
+            } else if (index == 22) {
                 b_divination = true;
                 console.log("divination");
-            } else if (index == 25) {
+            } else if (index == 23) {
                 b_double_quotes = true;
-                console.log("big double quotes");
-            } else if (index == 26) {
+                console.log("double quotes");
+            } else if (index == 24) {
                 b_double_single_quotes = true;
-                console.log("big double + single quotes");
-            } else if (index == 27) {
-                //???
-            } else if (index == 28) {
+                console.log("double + single quotes");
+            } else if (index == 25) {
+                //EMPTY
+            } else if (index == 26) {
                 b_double_textbox_separate = true;
                 document.querySelector(".story_double p").innerHTML = text;
                 double_textbox();
-            } else if (index == 29) {
+            } else if (index == 27) {
                 b_double_textbox_overlap = true;
-            } else if (index == 30) {
+            } else if (index == 28) {
                 // b_inner_image = true;
                 // inner_image();
                 b_inner_description = true;
                 inner_description();
-            } else if (index == 31) {
+            } else if (index == 29) {
                 b_text_wall = true;
                 text_wall();
-            } else if (index == 32) {
+            } else if (index == 30) {
                 // b_stretch_image = true;
                 // stretch_image();
                 b_resolve = true;
                 resolve();
-            } else if (index == 33) {
+            } else if (index == 31) {
                 b_big_double_quotes = true;
-            } else if (index == 34) {
+            } else if (index >= 32) {
+                b_big_double_quotes = true;
                 b_end = true;
                 end();
             }
@@ -490,7 +491,6 @@ function onResults(results) {
                         lines();
                     }
                     //?? How to cycle through multiple punctuations while still on index ==4??
-                    //?? why does this seem to be running way past when b_dots_parenthesis is true??
                     else if (b_dots_parenthesis) {
                         mouthCanvasCtx.fillText(
                             "(       )",
@@ -635,13 +635,22 @@ function onResults(results) {
                 textWidth = dv_points[308].x - dv_points[78].x;
                 textHeight = dv_points[14].y - dv_points[13].y;
 
-                story.style.transform = `translate(${round(
-                    dv_points[13].x - textWidth / 2
-                )}px ,${round(dv_points[14].y - textHeight)}px)`;
-
                 story.style.height = `${Math.floor(textHeight)}px`;
 
-                story.style.width = `${Math.floor(textWidth)}px`;
+                //for when the text is justified, need to make the textbox width slightly smaller so that all the text can be seen
+                //40 is based on font-size:40px
+                if (b_dots_inverted || b_dots_parenthesis) {
+                    story.style.transform = `translate(${
+                        round(dv_points[13].x - textWidth / 2) + 10 + 40 * 2
+                    }px ,${round(dv_points[14].y - textHeight) - 10}px)`;
+                    story.style.width = `${Math.floor(textWidth) - 40 * 4}px`;
+                } else {
+                    //the + 10 and -10px are just finessing the positioning, since the tracking is slightly off. Though technically not having the 10px offsets is more true to centering the posiiton
+                    story.style.transform = `translate(${
+                        round(dv_points[13].x - textWidth / 2) + 10
+                    }px ,${round(dv_points[14].y - textHeight) - 10}px)`;
+                    story.style.width = `${Math.floor(textWidth)}px`;
+                }
 
                 if (b_double_textbox_separate) {
                     story_double.style.transform = `translate(${round(
@@ -652,23 +661,36 @@ function onResults(results) {
 
                     story_double.style.width = `${Math.floor(textWidth)}px`;
                 } else if (b_double_textbox_overlap) {
-                    //??how to get this to overlap perfectly with story?
-                    story_double.style.transform = `translate(${round(
-                        dv_points[13].x - textWidth / 2
-                    )}px ,${round(dv_points[14].y - textHeight)}px)`;
+                    //to get story_double to overlap perfectly with story, make its transition the same! (or close enough)
+                    story_double.style.transition = "transform .1s ease-in-out";
+
+                    setTimeout(() => {
+                        story_double.style.transition =
+                            "transform .5s ease-in-out";
+                    }, 500);
+
+                    story_double.style.transform = `translate(${
+                        round(dv_points[13].x - textWidth / 2) + 10
+                    }px ,${round(dv_points[14].y - textHeight) - 10}px)`;
 
                     story_double.style.height = `${Math.floor(textHeight)}px`;
 
                     story_double.style.width = `${Math.floor(textWidth)}px`;
                 } else if (b_stretch_parentheses) {
-                    //??why is this positioning not working?? right now parentheses are going off screen
-                    parenthesis_left.style.left = landmarks_x_cropped[61];
+                    //??something is wrong with the positioning? dpeending on the screen size, positioning is off or ok?
+                    //!don't forget the px!!!!
+                    parenthesis_left.style.left =
+                        landmarks_x_cropped[61] + "px";
 
-                    parenthesis_left.style.top = landmarks_y_cropped[61];
+                    //don't ask me why it's textHeight / 4 instead of / 2, but this centers the parentheses correctly....
+                    parenthesis_left.style.top =
+                        landmarks_y_cropped[61] - textHeight / 4 + "px";
 
-                    parenthesis_right.style.left = landmarks_x_cropped[291];
+                    parenthesis_right.style.left =
+                        landmarks_x_cropped[291] + "px";
 
-                    parenthesis_right.style.top = landmarks_y_cropped[291];
+                    parenthesis_right.style.top =
+                        landmarks_y_cropped[291] - textHeight / 4 + "px";
 
                     parenthesis_left.style.height = `${Math.floor(
                         textHeight
@@ -678,8 +700,6 @@ function onResults(results) {
                         textHeight
                     )}px`;
 
-                    console.log("left:" + landmarks_x_cropped[61]);
-                    console.log("right:" + landmarks_x_cropped[291]);
                     // } else if (b_stretch_image) {
                     //     //lavender/img stretch styling
                     //     lavender.style.transform = `translate(${round(
@@ -739,13 +759,8 @@ function map(in_val, in_min, in_max, out_min, out_max) {
 
 const round = (val) => Math.ceil(val / 20) * 20;
 
-function clear_canvas() {
-    mouthCanvasCtx.clearRect(
-        0,
-        0,
-        mouthCanvasElement.width,
-        mouthCanvasElement.height
-    );
+function remove_black_screen() {
+    document.querySelector(".black_screen").style.display = "none";
 }
 
 //add transition to story so that it doesn't jitter (stabilize position)
@@ -758,6 +773,15 @@ function add_transition() {
 }
 
 add_transition();
+
+function clear_canvas() {
+    mouthCanvasCtx.clearRect(
+        0,
+        0,
+        mouthCanvasElement.width,
+        mouthCanvasElement.height
+    );
+}
 
 function remove_clippath() {
     text_element.classList.remove("polygon-clipped");
@@ -887,14 +911,11 @@ function dots_inverted() {
     console.log("dots_inverted");
 }
 
-function dots_parenthesis() {
-    story.style.textAlignLast = "";
-}
+function dots_parenthesis() {}
 
 function textbox() {
-    add_transition();
-
     remove_clippath();
+    story.style.textAlignLast = "";
 
     story.style.background = "white";
     story.style.color = "red";
@@ -907,8 +928,6 @@ function textbox() {
 }
 
 function exterior() {
-    add_transition();
-
     story.style.background = "";
     story.style.color = "white";
     story.style.mixBlendMode = "";
@@ -936,30 +955,33 @@ function between() {
     console.log("between");
 }
 
-function noise(mouth_outer_distances) {
+function noise(mouth_face_ratio) {
     exterior_element.style.display = "none";
     text_element.classList.remove("bg_gradient");
 
-    //??this seems to change based on how far user is from webcam??
-    console.log("mouth outer distances is" + mouth_outer_distances);
-    console.log("volume is:" + audio.volume);
+    // console.log("mouth_face_ratio is" + mouth_face_ratio);
+    // console.log("volume is:" + audio.volume);
 
-    let mouth_outer_distances_volume = map(mouth_outer_distances, 0, 160, 0, 1);
+    let mouth_face_ratio_volume = map(mouth_face_ratio, 1, 20, 0, 1);
     // Math.abs always returns a positive value
-    audio.volume = Math.abs(mouth_outer_distances_volume);
+    audio.volume = Math.abs(mouth_face_ratio_volume);
 
-    console.log("noise");
+    //advancing text with timestamps rather than index because I want the noise audio to be continuous, so it needs to play over just 1 index change
+    if (audio.currentTime >= 11) {
+        text = "thing";
+    } else if (audio.currentTime >= 7) {
+        text = "some";
+    }
+    // console.log("noise");
 }
 
 //this function is for stretching parenthesis, based off of stretch_image()
 function stretch_parentheses() {
-    // remove_clippath();
-
     // display must be block for image to stretch with div!!
     parenthesis_left.style.display = "block";
     parenthesis_right.style.display = "block";
 
-    console.log("stretch image");
+    // console.log("stretch parentheses");
 }
 
 function remove_parentheses() {
@@ -1508,8 +1530,6 @@ function double_single_quotes() {
 }
 
 function double_textbox() {
-    add_transition();
-
     story_double.style.display = "grid";
     remove_clippath();
 
@@ -1530,6 +1550,8 @@ function inner_description() {
 
     description_delay += 0.3;
     text_element.style.fontSize = "4em";
+    //for whatever reason when fontSize > 2em, the whole textbox gets really tall so everything shifts down, so I counter it by adding bottom margin to the p
+    document.querySelector(".story p").style.marginBottom = "2em";
     text = descriptions[description_index];
 
     if (description_delay > 1) {
@@ -1592,7 +1614,7 @@ function text_wall() {
 //     lavender.style.display = "block";
 
 //     //optional
-//     add_transition();
+//
 //     exterior_element.style.display = "block";
 //     exterior_element.classList.add("lavenders");
 
@@ -1602,8 +1624,10 @@ function text_wall() {
 function resolve() {
     remove_clippath();
 
-    text_element.style.fontSize = "3em";
+    text_element.style.fontSize = "2em";
     text_element.style.lineHeight = "1em";
+    document.querySelector(".story p").style.marginBottom = "1em";
+    text_element.classList.add("fadeIn");
 }
 
 function big_double_quotes() {
@@ -1624,11 +1648,8 @@ function big_double_quotes() {
     );
 }
 
-//??how to write this function so that the big quotation marks just freeze on the last frame instead of continuing to jitter/update?
 function end() {
-    if (ended) {
-    } else {
-        big_double_quotes();
-        ended = true;
-    }
+    ended = true;
+    //call the quotes one last time so they stay on screen as a freeze frame once onResults stops running when  "if (results.multiFaceLandmarks && !ended)" is no longer true because ended = true now
+    big_double_quotes();
 }

@@ -37,10 +37,21 @@ body {
 
 }
 
+.black_screen {
+    position:absolute;
+    z-index:10;
+    left:0;
+    top:0;
+    width:100vw;
+    height:100vh;
+    background:black;
+}
+
 .container {
     width:inherit;
     height:inherit;
-
+    position:relative;
+    /* background:red; */
 }
 
 /*width and height stretch the 1280px x 720px canvas to fill the browser*/
@@ -89,16 +100,17 @@ canvas {
 .story, .story_double {
     position: absolute;
     z-index: 4;
-    /* ??text-align: justify of .story p doesn't work when display is grid?? */
     display: grid;
     place-content: center;
-    min-height: 2em;
+    /* text-align: justify of .story p doesn't work unless you set grid-template-columns to be 100% (otherwise .story p width doesn't resize with .story)*/
+    grid-template-columns: minmax(auto, 100%);
+    min-height: 3em;
 
     /* background:red; */
 }
 
-.story p {
-    min-width:6em;
+.story p, .story_double p {
+    min-width:12em;
     /* background:blue; */
 }
 
@@ -181,6 +193,10 @@ svg {
     filter:blur(200px);
     animation: AnimateBG 10s ease infinite, rotate 10s ease infinite;
     
+}
+
+.fadeIn {
+    animation: fadeIn 2s ease-in;
 }
 
 /* 
@@ -268,3 +284,12 @@ background-position: center;
     }
 }
 
+
+@keyframes fadeIn {
+    0% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+}
